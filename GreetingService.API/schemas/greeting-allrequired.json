@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": "array",
+    "items": {
+        "$ref": "#/definitions/GreetingElement"
+    },
+    "definitions": {
+        "GreetingElement": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "Message": {
+                    "type": "string"
+                },
+                "From": {
+                    "type": "string"
+                },
+                "To": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "required": [
+                "From",
+                "Id",
+                "Message",
+                "Timestamp",
+                "To"
+            ],
+            "title": "GreetingElement"
+        }
+    }
+}
