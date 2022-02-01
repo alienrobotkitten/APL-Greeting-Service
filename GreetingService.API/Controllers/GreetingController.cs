@@ -9,14 +9,16 @@ namespace GreetingService.API.Controllers;
 [Route("api/[controller]")]
 [BasicAuth]
 [ApiController]
-[Consumes("application/xml")]
 public class GreetingController : ControllerBase
 {
+
     private readonly IGreetingRepository _database;
     public GreetingController(IGreetingRepository database)
     {
         _database = database;
     }
+
+
     // GET: api/<GreetingController>
     [HttpGet]
     public IEnumerable<Greeting> Get()
@@ -24,26 +26,33 @@ public class GreetingController : ControllerBase
         return _database.Get();
     }
 
+
     // GET api/<GreetingController>/5
     [HttpGet("{id}")]
-    public Greeting Get(Guid id)
+    public IActionResult Get(Guid id)
     {
-        return _database.Get(id);
+        var g = _database.Get(id);
+        return (g != null ? Ok(g) : NotFound());
     }
+
 
     // POST api/<GreetingController>
     [HttpPost]
-    public void Post([FromBody] Greeting g)
+    public IActionResult Post([FromBody] Greeting g)
     {
-        _database.Create(g);
+        bool success = _database.Create(g);
+        return (success ? Accepted() : Conflict());
     }
+
 
     // PUT api/<GreetingController>/5
     [HttpPut("{id}")]
-    public void Put(Guid id, [FromBody] Greeting g)
+    public IActionResult Put(Guid id, [FromBody] Greeting g)
     {
-        _database.Update(g);
+        bool success = _database.Update(g);
+        return (success ? Accepted() : NotFound());
     }
+
 
     //// DELETE api/<GreetingController>/5
     //[HttpDelete("{id}")]

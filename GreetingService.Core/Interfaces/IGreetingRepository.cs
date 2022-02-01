@@ -6,6 +6,6 @@ public interface IGreetingRepository
 {
     public Greeting Get (Guid id);
     public IEnumerable<Greeting> Get();
-    public void Create(Greeting g);
-    public void Update(Greeting g);
+    public bool Create(Greeting g);
+    public bool Update(Greeting g);
 }

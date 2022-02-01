@@ -50,7 +50,7 @@ public class FileGreetingRepository : IGreetingRepository
         _logger.Information("Retrieved all greetings.");
         return _greetingDatabase;
     }
-    public Greeting Get(Guid id)
+    public Greeting? Get(Guid id)
     {
         Console.WriteLine($"Getting greeting with id: {id} from database...");
 
@@ -66,24 +66,36 @@ public class FileGreetingRepository : IGreetingRepository
         }
         catch (Exception e)
         {
-            throw new Exception($"No greeting with id {id}: {e}");
+            return null;
         }
     }
-
-    public void Create(Greeting g)
+    /// <summary>
+    /// Creates greeting and returns true if it succeded.
+    /// </summary>
+    /// <param name="g"></param>
+    /// <returns></returns>
+    public bool Create(Greeting g)
     {
         if (Exists(g))
         {
             Console.WriteLine("Id already exists.");
+            return false;
         }
         else
         {
             _greetingDatabase.Add(g);
             Console.WriteLine($"Added new greeting with id {g.Id} to database.");
             WriteDatabaseToFile();
+            return true;
         }
     }
-    public void Update(Greeting updatedGreeting)
+
+    /// <summary>
+    /// Tries to update Greeting and returns true if succeeded.
+    /// </summary>
+    /// <param name="updatedGreeting"></param>
+    /// <returns></returns>
+    public bool Update(Greeting updatedGreeting)
     {
         if (Exists(updatedGreeting))
         {
@@ -97,11 +109,12 @@ public class FileGreetingRepository : IGreetingRepository
 
             WriteDatabaseToFile();
             Console.WriteLine($"Updated greeting {updatedGreeting.Id}.");
+            return true;
         }
         else
         {
             Console.WriteLine("No such id.");
-            throw new KeyNotFoundException("No such id.");
+            return false;
         }
     }
 
