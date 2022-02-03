@@ -22,7 +22,10 @@ builder.Services.AddScoped<IGreetingRepository, FileGreetingRepository>(env =>
     return new FileGreetingRepository("./data/NewGreetings.json");
 });
 
-builder.Services.AddScoped<IUserService, HardCodedUserService>();
+builder.Services.AddScoped<IUserService, AppSettingsUserService>(env =>
+{
+    return new AppSettingsUserService(env.GetService<IConfiguration>());
+});
 
 var app = builder.Build();
 
