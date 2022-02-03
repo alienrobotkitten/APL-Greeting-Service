@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IGreetingRepository, FileGreetingRepository>(env =>
 {
     IConfiguration? appsettings = env.GetService<IConfiguration>();
-    return new FileGreetingRepository(appsettings?["FileGreetingReposityPath"] ?? "");
+    return new FileGreetingRepository("./data/NewGreetings.json");
 });
 
 builder.Services.AddScoped<IUserService, HardCodedUserService>();

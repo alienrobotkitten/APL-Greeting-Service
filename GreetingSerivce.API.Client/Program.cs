@@ -1,11 +1,15 @@
 ﻿using System.Text.Json;
 using System.Net.Http.Json;
+using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GreetingService.API.Client;
 
 public class Program
 {
     private static HttpClient _httpclient = new();
+
     private static bool noExit = true;
     private static string _sender = "Default sender";
     private static string _recipient = "Default recipient";
@@ -15,10 +19,17 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        _serializerOptions = new JsonSerializerOptions();
-        _serializerOptions.AllowTrailingCommas = true;
-        _serializerOptions.PropertyNameCaseInsensitive = true;
-        _serializerOptions.WriteIndented = true;
+        var authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes("foo:bar"));
+        _httpclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authParam);        //Always send this header for all requests from this HttpClient
+        //_httpclient.BaseAddress = new Uri("http://localhost:5131/");
+        _httpclient.BaseAddress = new Uri("https://helena-appservice-dev.azurewebsites.net/");                                              //Always use this part of the uri in all requests sent from this HttpClient
+
+        _serializerOptions = new()
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true
+        };
 
         Display(
 @"
@@ -46,10 +57,43 @@ Welcome to command line Greeting client
         }
     }
 
+    private static async Task RepeatCallsAsync(int count)
+    {
+        var greetings = await GetGreetingsAsync();
+        var greeting = greetings.First();
+
+        //init a jobs list
+        var jobs = new List<int>();
+        for (int i = 0; i < count; i++)
+        {
+            jobs.Add(i);
+        }
+
+        var stopwatch = Stopwatch.StartNew();           //use stopwatch to measure elapsed time just like a real world stopwatch
+
+        //I cheat by running multiple calls in parallel for maximum throughput - we will be limited by our cpu, wifi, internet speeds
+        //This is a bit advanced and the syntax is new with lamdas - don't worry if you don't understand all of it.
+        //I always copy this from the internet and adapt to my needs
+        //Running this in Visual Studio debugger is slow, try running .exe file directly from File Explorer or command line prompt
+        long latencySum = 0;
+        await Parallel.ForEachAsync(jobs, new ParallelOptions { MaxDegreeOfParallelism = 50 }, async (job, token) =>
+        {
+            var start = stopwatch.ElapsedMilliseconds;
+            var response = await _httpclient.GetAsync($"api/greeting/{greeting.id}");
+            var end = stopwatch.ElapsedMilliseconds;
+            var diff = end - start;
+            latencySum += diff;
+
+            Console.WriteLine($"Response: {response.StatusCode} - Call: {job} - latency: {diff} ms - rate/s: {job / stopwatch.Elapsed.TotalSeconds}");
+        });
+        stopwatch.Stop();
+        Console.WriteLine("Average latency: " + latencySum/count);
+    }
+
     // Done
     private static async Task<List<Greeting>> GetGreetingsAsync()
     {
-        var result = await _httpclient.GetAsync("http://localhost:5131/api/Greeting");
+        var result = await _httpclient.GetAsync("api/Greeting");
 
         if (result.IsSuccessStatusCode)
         {
@@ -66,7 +110,7 @@ Welcome to command line Greeting client
     // Done
     private static async Task<Greeting> GetGreetingAsync(Guid id)
     {
-        var result = await _httpclient.GetAsync($"http://localhost:5131/api/Greeting/{id.ToString()}");
+        var result = await _httpclient.GetAsync($"api/Greeting/{id.ToString()}");
 
         if (result.IsSuccessStatusCode)
         {
@@ -96,7 +140,7 @@ Welcome to command line Greeting client
             _to: _recipient,
             _message: message);
 
-        var result = await _httpclient.PostAsJsonAsync<Greeting>($"http://localhost:5131/api/Greeting/", g, _serializerOptions);
+        var result = await _httpclient.PostAsJsonAsync<Greeting>($"api/Greeting/", g, _serializerOptions);
 
         if (result.IsSuccessStatusCode)
         {
@@ -115,7 +159,7 @@ Welcome to command line Greeting client
 
         upDatedGreeting.message = message;
 
-        var result = await _httpclient.PutAsJsonAsync<Greeting>($"http://localhost:5131/api/Greeting/{id.ToString()}",
+        var result = await _httpclient.PutAsJsonAsync<Greeting>($"api/Greeting/{id.ToString()}",
             upDatedGreeting,
             _serializerOptions);
 
@@ -180,6 +224,11 @@ Welcome to command line Greeting client
             await ExportGreetingsAsync();
 
         }
+        else if (input.Contains("repeat"))
+        {
+            var times = int.Parse(input.Split(" ").ElementAt<string>(1));
+            await RepeatCallsAsync(times);
+        }
         else if (input.Contains("update greeting["))
         {
             string[] splitInput = GetValueFromInput(input);
@@ -219,6 +268,7 @@ Available commands:
     write greeting[message]
     update greeting[id][message]
     export
+    repeat
     exit
 
 Write command and press [enter] to execute");

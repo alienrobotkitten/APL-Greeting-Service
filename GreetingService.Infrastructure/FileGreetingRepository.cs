@@ -1,90 +1,74 @@
 ﻿using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
-using System.Text.Json;
 using Serilog;
-using Serilog.Sinks.SystemConsole;
 using Serilog.Core;
+using System.Text.Json;
 
 namespace GreetingService.Infrastructure;
 public class FileGreetingRepository : IGreetingRepository
 {
-    private List<Greeting> _greetingDatabase;
-    //private const string _filename = "./data/TestGreetings.json";
     private string _filename;
+    private string _logfilepath;
     private JsonSerializerOptions _serializerOptions;
-    private Logger _logger = new LoggerConfiguration()
-                      .WriteTo.Console()
-                      .CreateLogger();
+    private List<Greeting> _greetingDatabase;
+    private Logger _logger;
 
-    public FileGreetingRepository() //ILogger logger)
-    {
-        _filename = "./data/NewGreetings.json";
-       // _logger = logger;
-        Init();
-    }
-
-    public FileGreetingRepository(string filename) //, ILogger logger)
+    public FileGreetingRepository(string filename)
     {
         _filename = filename;
-        //_logger = logger;
-        Init();
-    }
-    private void Init()
-    {
-        Console.WriteLine("Constructor starts...");
-
-        _serializerOptions = new JsonSerializerOptions();
-        _serializerOptions.AllowTrailingCommas = true;
-        _serializerOptions.PropertyNameCaseInsensitive = true;
-        _serializerOptions.WriteIndented = true;
+        _logfilepath = "Filegreetingrepository.log";
+        _serializerOptions = new()
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true
+        };
+        _logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File(_logfilepath)
+            .CreateLogger();
+        ;
 
         _greetingDatabase = ReadDatabaseFromFile();
-
-        Console.WriteLine("Constructor finished.");
     }
 
+    /// <summary>
+    /// Gets all greetings.
+    /// </summary>
+    /// <returns>List<Greeting></returns>
     public IEnumerable<Greeting> Get()
     {
-        Console.WriteLine("Retrieved all greetings.");
-
         _logger.Information("Retrieved all greetings.");
         return _greetingDatabase;
     }
+
+    /// <summary>
+    /// Returns greeting with specified id if it exists.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Greeting or null.</returns>
     public Greeting? Get(Guid id)
     {
-        Console.WriteLine($"Getting greeting with id: {id} from database...");
-
-        var output = from g in _greetingDatabase
-                     where g.Id == id
-                     select g;
-
-        try
-        {
-            Greeting g = output.First();
-            Console.WriteLine("Retrieved one greeting from database.");
-            return g;
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
+        _logger.Information($"Trying to get greeting with id: {id} from database...");
+        return GetGreeting(id);
     }
+
     /// <summary>
     /// Creates greeting and returns true if it succeded.
     /// </summary>
-    /// <param name="g"></param>
+    /// <param name="greeting"></param>
     /// <returns></returns>
-    public bool Create(Greeting g)
+    public bool Create(Greeting greeting)
     {
-        if (Exists(g))
+        if (GetGreeting(greeting.Id) == null)
         {
-            Console.WriteLine("Id already exists.");
+            _logger.Warning("Id already exists.");
             return false;
         }
         else
         {
-            _greetingDatabase.Add(g);
-            Console.WriteLine($"Added new greeting with id {g.Id} to database.");
+            _greetingDatabase.Add(greeting);
+            _logger.Information($"Added new greeting with id {greeting.Id} to database.");
             WriteDatabaseToFile();
             return true;
         }
@@ -97,62 +81,50 @@ public class FileGreetingRepository : IGreetingRepository
     /// <returns></returns>
     public bool Update(Greeting updatedGreeting)
     {
-        if (Exists(updatedGreeting))
+        var g = GetGreeting(updatedGreeting.Id);
+
+        if (g == null)
         {
-            var oldGreeting = (from gs in _greetingDatabase
-                               where gs.Id == updatedGreeting.Id
-                               select gs)
-                             .First();
-
-            _greetingDatabase.Remove(oldGreeting);
-            Create(updatedGreeting);
-
-            WriteDatabaseToFile();
-            Console.WriteLine($"Updated greeting {updatedGreeting.Id}.");
-            return true;
+            _logger.Warning("No such id.");
+            return false;
         }
         else
         {
-            Console.WriteLine("No such id.");
-            return false;
+            _greetingDatabase.Remove(g);
+            _greetingDatabase.Add(updatedGreeting);
+            _logger.Information($"Updated greeting {updatedGreeting.Id}.");
+            WriteDatabaseToFile();
+            return true;
         }
     }
+
+
 
 
 
     // private methods
-    private bool Exists(Greeting g)
+    private Greeting? GetGreeting(Guid id)
     {
-        var searchresult = from gs in _greetingDatabase
-                           where gs.Id == g.Id
-                           select gs;
-        return searchresult.Any();
+        return _greetingDatabase.Find(new Predicate<Greeting>(g => g.Id == id));
     }
+
     private void WriteDatabaseToFile()
     {
-        JsonSerializerOptions? jsonSerializerConfig = new();
-
-
-        string output = JsonSerializer.Serialize(_greetingDatabase, _serializerOptions);
-
-        File.WriteAllText(_filename, output);
-
-        Console.WriteLine("Wrote database to file.");
+        File.WriteAllText(_filename, JsonSerializer.Serialize<List<Greeting>>(_greetingDatabase, _serializerOptions));
+        _logger.Information("Wrote database to file.");
     }
     private List<Greeting> ReadDatabaseFromFile()
     {
-        Console.WriteLine("Reading database from file...");
         try
         {
             List<Greeting>? database = JsonSerializer.Deserialize<List<Greeting>>(File.ReadAllText(_filename), _serializerOptions) ?? throw new Exception();
-            Console.WriteLine("Successfully read database from file.");
+            _logger.Information("Successfully read database from file.");
             return database;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Couldn't read database from file: {e}");
+            _logger.Error($"Couldn't read database from file: {e}");
             return new List<Greeting>();
-
         }
     }
 }
