@@ -19,10 +19,10 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        var authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes("foo:bar"));
+        var authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes("correct:horse"));
         _httpclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authParam);        //Always send this header for all requests from this HttpClient
         //_httpclient.BaseAddress = new Uri("http://localhost:5131/");
-        _httpclient.BaseAddress = new Uri("https://helena-appservice-dev.azurewebsites.net/");                                              //Always use this part of the uri in all requests sent from this HttpClient
+        _httpclient.BaseAddress = new Uri("https://helena-webapp-dev.azurewebsites.net/");                                              //Always use this part of the uri in all requests sent from this HttpClient
 
         _serializerOptions = new()
         {
