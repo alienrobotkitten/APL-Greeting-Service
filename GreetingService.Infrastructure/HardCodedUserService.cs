@@ -13,12 +13,12 @@ public class HardCodedUserService : IUserService
     };
     public bool IsValidUser(string username, string password)
     {
-        if (!string.IsNullOrEmpty(username) 
-            && !string.IsNullOrEmpty(password) 
+        if (!string.IsNullOrEmpty(username)
+            && !string.IsNullOrEmpty(password)
             && _users.ContainsKey(username))
         {
             return (_users[username] == password);
-        } 
+        }
         else
         {
             return false;
