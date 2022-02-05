@@ -1,5 +1,8 @@
 using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,16 +19,21 @@ builder.Services.AddSwaggerGen();
 //                      .WriteTo.Console()
 //                      .CreateLogger();
 //});
+builder.Services.AddSingleton<Serilog.ILogger, Serilog.Core.Logger>(env =>
+ {
+     return new Serilog.LoggerConfiguration()
+                       .WriteTo.File("./data/serilog.log")
+                       .CreateLogger();
+ });
 builder.Services.AddScoped<IGreetingRepository, FileGreetingRepository>(env =>
 {
-    IConfiguration? appsettings = env.GetService<IConfiguration>();
+    //IConfiguration? appsettings = env.GetService<IConfiguration>();
     return new FileGreetingRepository("./data/NewGreetings.json");
 });
 
-builder.Services.AddScoped<IUserService, AppSettingsUserService>(env =>
-{
-    return new AppSettingsUserService(env.GetService<IConfiguration>());
-});
+builder.Services.AddScoped<IUserService, AppSettingsUserService>();
+builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Information);
 
 var app = builder.Build();
 
