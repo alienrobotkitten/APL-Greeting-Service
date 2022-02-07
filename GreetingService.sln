@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreetingService.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreetingService.API.Client", "GreetingSerivce.API.Client\GreetingService.API.Client.csproj", "{558DA61A-B987-48FC-AE10-E40941F3985A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreetingService.API.Function", "GreetingService.API.Function\GreetingService.API.Function.csproj", "{005D659E-C062-40DA-A847-63993D8E508E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{558DA61A-B987-48FC-AE10-E40941F3985A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{558DA61A-B987-48FC-AE10-E40941F3985A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{558DA61A-B987-48FC-AE10-E40941F3985A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{005D659E-C062-40DA-A847-63993D8E508E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{005D659E-C062-40DA-A847-63993D8E508E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{005D659E-C062-40DA-A847-63993D8E508E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{005D659E-C062-40DA-A847-63993D8E508E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

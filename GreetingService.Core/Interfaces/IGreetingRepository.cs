@@ -8,4 +8,5 @@ public interface IGreetingRepository
     public IEnumerable<Greeting> Get();
     public bool Create(Greeting g);
     public bool Update(Greeting g);
+    bool Delete(Guid id);
 }
