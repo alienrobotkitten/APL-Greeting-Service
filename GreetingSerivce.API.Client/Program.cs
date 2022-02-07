@@ -1,8 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace GreetingService.API.Client;
 
