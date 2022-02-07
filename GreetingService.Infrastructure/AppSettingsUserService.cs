@@ -21,11 +21,11 @@ public class AppSettingsUserService : IUserService
         var entries = _config.AsEnumerable().ToDictionary(x => x.Key, x => x.Value);
         if (entries.TryGetValue(username, out var storedPassword))
         {
-            _logger.LogInformation($"Valid credentials for user {username}.");
+            _logger.LogInformation($"User '{username}' authenticated successfully.");
             return storedPassword == password;
         }
 
-        _logger.LogWarning($"User {username} did not provide valid credentials.");
+        _logger.LogWarning($"User '{username}' did not provide valid credentials.");
         return false;
     }
 }
