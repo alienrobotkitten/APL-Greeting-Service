@@ -1,28 +1,34 @@
 ﻿using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Core;
+using System.Linq;
 using System.Text.Json;
 
 namespace GreetingService.Infrastructure;
 public class FileGreetingRepository : IGreetingRepository
 {
     private string _filename;
+    private IConfiguration _config;
     private string _logfilepath;
     private JsonSerializerOptions _serializerOptions;
     private List<Greeting> _greetingDatabase;
-    private Logger _logger;
+    private Serilog.ILogger _logger;
 
-    public FileGreetingRepository(string filename)
+    public FileGreetingRepository(IConfiguration config)
     {
-        _filename = filename;
-        _logfilepath = "Filegreetingrepository.log";
+        _config = config;
+
+        _filename = _config["FileGreetingRepositoryPath"];
+
         _serializerOptions = new()
         {
             AllowTrailingCommas = true,
             PropertyNameCaseInsensitive = true,
             WriteIndented = true
         };
+
+        _logfilepath = _config["LogFilePath"];
         _logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.File(_logfilepath)
@@ -60,7 +66,7 @@ public class FileGreetingRepository : IGreetingRepository
     /// <returns></returns>
     public bool Create(Greeting greeting)
     {
-        if (GetGreeting(greeting.Id) == null)
+        if (GetGreeting(greeting.Id) != null)
         {
             _logger.Warning("Id already exists.");
             return false;
@@ -81,7 +87,7 @@ public class FileGreetingRepository : IGreetingRepository
     /// <returns></returns>
     public bool Update(Greeting updatedGreeting)
     {
-        var g = GetGreeting(updatedGreeting.Id);
+        Greeting? g = GetGreeting(updatedGreeting.Id);
 
         if (g == null)
         {
@@ -98,6 +104,23 @@ public class FileGreetingRepository : IGreetingRepository
         }
     }
 
+    public bool Delete(Guid id)
+    {
+        Greeting? g = GetGreeting(id);
+
+        if (g == null)
+        {
+            _logger.Warning("no such id");
+            return false;
+        } 
+        else
+        {
+            _greetingDatabase.Remove(g);
+            _logger.Information($"Deleted greeting {id}.");
+            WriteDatabaseToFile();
+            return true;
+        }
+    }
 
 
 
@@ -105,7 +128,8 @@ public class FileGreetingRepository : IGreetingRepository
     // private methods
     private Greeting? GetGreeting(Guid id)
     {
-        return _greetingDatabase.Find(new Predicate<Greeting>(g => g.Id == id));
+        IEnumerable<Greeting> greetings = from g in _greetingDatabase where g.Id == id select g;
+        return greetings.FirstOrDefault();
     }
 
     private void WriteDatabaseToFile()
@@ -127,4 +151,5 @@ public class FileGreetingRepository : IGreetingRepository
             return new List<Greeting>();
         }
     }
+
 }

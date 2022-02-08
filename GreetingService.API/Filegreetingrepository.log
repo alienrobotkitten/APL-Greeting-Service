@@ -1,0 +1,16 @@
+2022-02-07 14:45:06.829 +01:00 [ERR] Couldn't read database from file: System.ArgumentNullException: Value cannot be null. (Parameter 'path')
+   at System.IO.File.ReadAllText(String path)
+   at GreetingService.Infrastructure.FileGreetingRepository.ReadDatabaseFromFile() in C:\git\APL-Greeting-Service\GreetingService.Infrastructure\FileGreetingRepository.cs:line 128
+2022-02-07 16:50:09.581 +01:00 [INF] Successfully read database from file.
+2022-02-07 16:50:09.601 +01:00 [INF] Retrieved all greetings.
+2022-02-07 16:58:11.106 +01:00 [INF] Successfully read database from file.
+2022-02-07 16:58:13.454 +01:00 [INF] Trying to get greeting with id: e2bb33f8-75cc-4e66-8a87-389087e09e1c from database...
+2022-02-07 16:59:44.329 +01:00 [INF] Successfully read database from file.
+2022-02-07 16:59:46.644 +01:00 [INF] Trying to get greeting with id: e2bb33f8-75cc-4e66-8a87-389087e09e1c from database...
+2022-02-07 17:04:10.307 +01:00 [INF] Successfully read database from file.
+2022-02-07 17:04:10.326 +01:00 [INF] Retrieved all greetings.
+2022-02-07 17:06:30.000 +01:00 [INF] Successfully read database from file.
+2022-02-07 17:06:30.017 +01:00 [INF] Retrieved all greetings.
+2022-02-07 17:07:12.278 +01:00 [INF] Successfully read database from file.
+2022-02-07 17:07:18.376 +01:00 [INF] Deleted greeting e2bb33f8-75cc-4e66-8a87-389087e09e1c.
+2022-02-07 17:07:18.799 +01:00 [INF] Wrote database to file.
