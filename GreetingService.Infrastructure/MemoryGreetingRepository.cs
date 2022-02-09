@@ -6,43 +6,24 @@ using Serilog;
 using System.Text.Json;
 
 namespace GreetingService.Infrastructure;
-public class FileGreetingRepository : IGreetingRepository
+public class MemoryGreetingRepository : IGreetingRepository
 {
-    private string _filename;
     private IConfiguration _config;
     private string _logfilepath;
-    private JsonSerializerOptions _serializerOptions;
     private List<Greeting> _greetingDatabase;
-    private Serilog.ILogger _logger;
+    private ILogger _logger;
 
-    public FileGreetingRepository(IConfiguration config)
+    public MemoryGreetingRepository(IConfiguration config)
     {
-        //string _appsettingsPath = "./appsettings.json";
-
-        //IConfiguration _config = new ConfigurationBuilder().AddJsonFile(_appsettingsPath).Build();
-
-        _config = config;
-
-        // _filename = _config["FileGreetingRepositoryPath"];
-        _filename = "../../../TestGreetings.json";
-
-        _serializerOptions = new()
-        {
-            AllowTrailingCommas = true,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        };
-
         // _logfilepath = _config["LogFilePath"];
+        _greetingDatabase = new();
+        _config = config;
         _logfilepath = "./greetingrepo.log";
 
         _logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.File(_logfilepath)
             .CreateLogger();
-        ;
-
-        _greetingDatabase = ReadDatabaseFromFile();
     }
 
     /// <summary>
@@ -82,7 +63,6 @@ public class FileGreetingRepository : IGreetingRepository
         {
             _greetingDatabase.Add(greeting);
             _logger.Information($"Added new greeting with id {greeting.Id} to database.");
-            WriteDatabaseToFile();
             return true;
         }
     }
@@ -105,8 +85,9 @@ public class FileGreetingRepository : IGreetingRepository
         {
             _greetingDatabase.Remove(g);
             _greetingDatabase.Add(updatedGreeting);
+
             _logger.Information($"Updated greeting {updatedGreeting.Id}.");
-            WriteDatabaseToFile();
+
             return true;
         }
     }
@@ -117,14 +98,15 @@ public class FileGreetingRepository : IGreetingRepository
 
         if (g == null)
         {
-            _logger.Warning("no such id");
+            _logger.Warning("No such id");
             return false;
-        } 
+        }
         else
         {
             _greetingDatabase.Remove(g);
+
             _logger.Information($"Deleted greeting {id}.");
-            WriteDatabaseToFile();
+
             return true;
         }
     }
@@ -135,28 +117,10 @@ public class FileGreetingRepository : IGreetingRepository
     // private methods
     private Greeting? GetGreeting(Guid id)
     {
-        IEnumerable<Greeting> greetings = from g in _greetingDatabase where g.Id == id select g;
-        return greetings.FirstOrDefault();
+        var greetings = from g in _greetingDatabase
+                        where g.Id == id
+                        select g;
+        var result = greetings.FirstOrDefault();
+        return result;
     }
-
-    private void WriteDatabaseToFile()
-    {
-        File.WriteAllText(_filename, JsonSerializer.Serialize<List<Greeting>>(_greetingDatabase, _serializerOptions));
-        _logger.Information("Wrote database to file.");
-    }
-    private List<Greeting> ReadDatabaseFromFile()
-    {
-        try
-        {
-            List<Greeting>? database = JsonSerializer.Deserialize<List<Greeting>>(File.ReadAllText(_filename), _serializerOptions) ?? throw new Exception();
-            _logger.Information("Successfully read database from file.");
-            return database;
-        }
-        catch (Exception e)
-        {
-            _logger.Error($"Couldn't read database from file: {e}");
-            return new List<Greeting>();
-        }
-    }
-
 }

@@ -1,3 +1,4 @@
+using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -18,27 +19,32 @@ namespace GreetingService.API.Function
     {
         private readonly ILogger<GetGreeting> _logger;
         private readonly IGreetingRepository _database;
+        private readonly IAuthHandler _authHandler;
 
-        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepository database)
+        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
+            _authHandler = authHandler;
         }
 
         [FunctionName("GetGreeting")]
-        [OpenApiOperation(operationId: "Run", tags: new[] { "id" })]
+        [OpenApiOperation(operationId: "Run", tags: new[] { "Greetings" })]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<Greeting>), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Id is not valid guid")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Greeting not found")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{id}")] HttpRequest req, string id)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            _logger.LogInformation("C# HTTP trigger function processed a GET by ID request.");
+
+            if (!_authHandler.IsAuthorized(req))
+                return new UnauthorizedResult();
 
             if (!Guid.TryParse(id, out var guid))
                 return new BadRequestObjectResult($"{id} is not a valid Guid");
 
-            # nullable enable
-            Greeting? g = _database.Get(guid); 
+            #nullable enable
+            Greeting? g = await Task.Run(() => _database.Get(guid));
 
             return (g == null ? new NotFoundResult() : new OkObjectResult(g));
         }

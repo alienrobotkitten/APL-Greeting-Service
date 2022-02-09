@@ -1,9 +1,9 @@
-﻿using GreetingService.Core.Interfaces;
+﻿using GreetingService.API.Function.Authentication;
+using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 
@@ -17,8 +17,12 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddHttpClient();
 
-        builder.Services.AddScoped<IGreetingRepository, FileGreetingRepository>();
+        builder.Services.AddLogging();
 
-        builder.Services.AddScoped<IUserService, AppSettingsUserService>();
+        builder.Services.AddSingleton<IGreetingRepository, MemoryGreetingRepository>();
+
+        builder.Services.AddScoped<IUserService, HardCodedUserService>();
+
+        builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
     }
 }

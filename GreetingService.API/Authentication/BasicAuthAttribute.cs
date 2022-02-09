@@ -1,6 +1,4 @@
-﻿using System;
-using GreetingService.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 /// <summary>
 /// Summary description for Class1
 /// </summary>
