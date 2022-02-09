@@ -49,13 +49,6 @@
     "Id": "e7cafd58-3cf5-4dde-81b5-bc38aa00fd87"
   },
   {
-    "Timestamp": "0001-01-01T00:00:00",
-    "Message": "This is greeting no 1",
-    "From": "",
-    "To": "",
-    "Id": "e2bb33f8-75cc-4e66-8a87-389087e09e1c"
-  },
-  {
     "Timestamp": "2022-01-27T16:35:38.4459316+01:00",
     "Message": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "From": "Helena",

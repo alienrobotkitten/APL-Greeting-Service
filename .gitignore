@@ -17,4 +17,6 @@
 *.user
 *.psess
 *.vsp
+appsettings.json
 local.settings.json
+*settings.json
