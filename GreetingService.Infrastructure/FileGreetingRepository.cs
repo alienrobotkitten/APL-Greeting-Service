@@ -17,14 +17,9 @@ public class FileGreetingRepository : IGreetingRepository
 
     public FileGreetingRepository(IConfiguration config)
     {
-        //string _appsettingsPath = "./appsettings.json";
-
-        //IConfiguration _config = new ConfigurationBuilder().AddJsonFile(_appsettingsPath).Build();
-
         _config = config;
 
-        // _filename = _config["FileGreetingRepositoryPath"];
-        _filename = "../../../TestGreetings.json";
+        _filename = "./TestGreetings.json";
 
         _serializerOptions = new()
         {
@@ -33,14 +28,12 @@ public class FileGreetingRepository : IGreetingRepository
             WriteIndented = true
         };
 
-        // _logfilepath = _config["LogFilePath"];
         _logfilepath = "./greetingrepo.log";
 
         _logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.File(_logfilepath)
             .CreateLogger();
-        ;
 
         _greetingDatabase = ReadDatabaseFromFile();
     }
@@ -117,7 +110,7 @@ public class FileGreetingRepository : IGreetingRepository
 
         if (g == null)
         {
-            _logger.Warning("no such id");
+            _logger.Warning("No such id");
             return false;
         } 
         else
@@ -135,7 +128,9 @@ public class FileGreetingRepository : IGreetingRepository
     // private methods
     private Greeting? GetGreeting(Guid id)
     {
-        IEnumerable<Greeting> greetings = from g in _greetingDatabase where g.Id == id select g;
+        IEnumerable<Greeting> greetings = from g in _greetingDatabase 
+										  where g.Id == id 
+										  select g;
         return greetings.FirstOrDefault();
     }
 

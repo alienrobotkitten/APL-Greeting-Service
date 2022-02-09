@@ -19,7 +19,7 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddLogging();
 
-        builder.Services.AddSingleton<IGreetingRepository, MemoryGreetingRepository>();
+        builder.Services.AddSingleton<IGreetingRepository, FileGreetingRepository>();
 
         builder.Services.AddScoped<IUserService, HardCodedUserService>();
 
