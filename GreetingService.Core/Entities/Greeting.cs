@@ -13,6 +13,15 @@ public class Greeting
 
     // private static readonly JsonSerializerSettings _serializerOptions;
 
+    public Greeting()
+    {
+        Id = Guid.NewGuid();
+        Message = "(empty)";
+        From = "(empty)";
+        To = "(empty)";
+        Timestamp = DateTime.Now;
+    }
+
     /// <summary>
     /// Makes a greeting with current date and time and a new guid
     /// </summary>
