@@ -1,5 +1,5 @@
 /* 
-az deployment group create --resource-group helena-rg-dev --template-file azure_resources.bicep
+az deployment group create --resource-group helena-cicd-dev --template-file azure_resources.bicep
 */
 param appName string = 'pmq8aiwea'
 param location string = resourceGroup().location
