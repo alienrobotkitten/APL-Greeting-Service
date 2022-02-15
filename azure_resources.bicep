@@ -1,18 +1,15 @@
-/* 
-az deployment group create --resource-group helena-cicd-dev --template-file azure_resources.bicep
-*/
-param appName string = 'helenacicdtestdev'
+param appName string
 param location string = resourceGroup().location
 
 // storage accounts must be between 3 and 24 characters in length and use numbers and lower-case letters only
-var storageAccountNameblob = '${appName}blob' 
-var storageAccountNamelog = '${appName}log' 
-var hostingPlanName = '${appName}host'
-var appInsightsName = '${appName}ins'
-var functionAppName = appName
+var storageAccountName = '${substring(appName,0,10)}${uniqueString(resourceGroup().id)}' 
+var loggingStorageAccountName = '${substring(appName,0,7)}log${uniqueString(resourceGroup().id)}' 
+var hostingPlanName = '${appName}${uniqueString(resourceGroup().id)}'
+var appInsightsName = '${appName}${uniqueString(resourceGroup().id)}'
+var functionAppName = '${appName}'
 
-resource storageAccount_blob 'Microsoft.Storage/storageAccounts@2019-06-01' = {
-  name: storageAccountNameblob
+resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: storageAccountName
   location: location
   kind: 'StorageV2'
   sku: {
@@ -20,8 +17,8 @@ resource storageAccount_blob 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   }
 }
 
-resource storageAccount_log 'Microsoft.Storage/storageAccounts@2019-06-01' = {
-  name: storageAccountNamelog
+resource loggingStorageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: loggingStorageAccountName
   location: location
   kind: 'StorageV2'
   sku: {
@@ -60,7 +57,6 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
   properties: {
     httpsOnly: true
     serverFarmId: hostingPlan.id
-    clientAffinityEnabled: true
     siteConfig: {
       appSettings: [
         {
@@ -69,27 +65,27 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
         }
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_blob.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_blob.id, storageAccount_blob.apiVersion).keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'LoggingStorageAccount'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${loggingStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(loggingStorageAccount.id, loggingStorageAccount.apiVersion).keys[0].value}'
         }
         {
           'name': 'FUNCTIONS_EXTENSION_VERSION'
-          'value': '~3'
+          'value': '~4'
         }
         {
           'name': 'FUNCTIONS_WORKER_RUNTIME'
           'value': 'dotnet'
         }
         {
-          name: 'correct'
-          value: 'horse'
-        }
-        {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_blob.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_blob.id, storageAccount_blob.apiVersion).keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
         }
         {
-          name: 'LoggingStorageAccount'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_log.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_log.id, storageAccount_log.apiVersion).keys[0].value}'
+          name: 'FileRepositoryFilePath'
+          value: '/home/site/wwwroot/greeting.json'
         }
         // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
         // WEBSITE_RUN_FROM_PACKAGE will be set to 1 by func azure functionapp publish

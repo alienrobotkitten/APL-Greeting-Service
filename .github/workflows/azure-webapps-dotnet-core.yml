@@ -20,7 +20,7 @@
 name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: 'helenacicdtestdev'    # set this to the name of your Azure Web App
+  AZURE_WEBAPP_NAME: helenatestdev    # set this to the name of your Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: '.'     # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x'            # set this to the .NET Core version to use
 
@@ -53,6 +53,9 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: Test with dotnet
+        run: dotnet test	  
+
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
@@ -83,11 +86,11 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az group create -l westeurope -n helena-cicd-dev
-            az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep
+            az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=helenatestdev
       
-      - name: Sleep
-        run: sleep 60s
-        shell: bash
+      # - name: Sleep
+      #   run: sleep 60s
+      #   shell: bash
 
   deploy:
     runs-on: ubuntu-latest
