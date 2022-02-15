@@ -13,7 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreetingService.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreetingService.API.Client", "GreetingSerivce.API.Client\GreetingService.API.Client.csproj", "{558DA61A-B987-48FC-AE10-E40941F3985A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreetingService.API.Function", "GreetingService.API.Function\GreetingService.API.Function.csproj", "{005D659E-C062-40DA-A847-63993D8E508E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreetingService.API.Function", "GreetingService.API.Function\GreetingService.API.Function.csproj", "{005D659E-C062-40DA-A847-63993D8E508E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6ADE7C9-ECA5-46CB-9FEE-106E76DD0C4F} = {A6ADE7C9-ECA5-46CB-9FEE-106E76DD0C4F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
