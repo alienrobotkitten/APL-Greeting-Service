@@ -1,14 +1,14 @@
 /* 
-az deployment group create --resource-group helena-rg-dev --template-file azure_resources.bicep
+az deployment group create --resource-group helena-cicd-dev --template-file azure_resources.bicep
 */
-param appName string = 'pmq8aiwea'
+param appName string = 'helena-cicdtest-dev'
 param location string = resourceGroup().location
 
 // storage accounts must be between 3 and 24 characters in length and use numbers and lower-case letters only
-var storageAccountNameblob = '${appName}bicep945jfblob' 
-var storageAccountNamelog = '${appName}bicep945jflog' 
-var hostingPlanName = '${appName}bicep945jfhost'
-var appInsightsName = '${appName}bicep945jfins'
+var storageAccountNameblob = '${appName}blob' 
+var storageAccountNamelog = '${appName}log' 
+var hostingPlanName = '${appName}host'
+var appInsightsName = '${appName}ins'
 var functionAppName = '${appName}app'
 
 resource storageAccount_blob 'Microsoft.Storage/storageAccounts@2019-06-01' = {
@@ -78,6 +78,10 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
         {
           'name': 'FUNCTIONS_WORKER_RUNTIME'
           'value': 'dotnet'
+        }
+        {
+          name: 'correct'
+          value: 'horse'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
