@@ -62,7 +62,7 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-deploy_bicep:
+  deploy_bicep:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -85,7 +85,7 @@ deploy_bicep:
             az group create -l westeurope -n helena-cicd-dev
             az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep
 
-deploy_app:
+  deploy:
     runs-on: ubuntu-latest
     needs: deploy_bicep
     environment:
