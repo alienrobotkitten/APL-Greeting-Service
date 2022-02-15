@@ -48,7 +48,7 @@ namespace GreetingService.API.Function
 
                 return (success ? new OkResult() : new ConflictResult());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new BadRequestResult();
             }

@@ -1,29 +1,21 @@
 ﻿using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
-
-using Serilog;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace GreetingService.Infrastructure;
 public class MemoryGreetingRepository : IGreetingRepository
 {
     private IConfiguration _config;
-    private string _logfilepath;
     private List<Greeting> _greetingDatabase;
     private ILogger _logger;
 
-    public MemoryGreetingRepository(IConfiguration config)
+    public MemoryGreetingRepository(ILogger logger, IConfiguration config)
     {
-        // _logfilepath = _config["LogFilePath"];
         _greetingDatabase = new();
         _config = config;
-        _logfilepath = "./greetingrepo.log";
-
-        _logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(_logfilepath)
-            .CreateLogger();
+        _logger = logger;
     }
 
     /// <summary>
@@ -32,7 +24,7 @@ public class MemoryGreetingRepository : IGreetingRepository
     /// <returns>List<Greeting></returns>
     public IEnumerable<Greeting> Get()
     {
-        _logger.Information("Retrieved all greetings.");
+        _logger.LogInformation("Retrieved all greetings.");
         return _greetingDatabase;
     }
 
@@ -43,7 +35,7 @@ public class MemoryGreetingRepository : IGreetingRepository
     /// <returns>Greeting or null.</returns>
     public Greeting? Get(Guid id)
     {
-        _logger.Information($"Trying to get greeting with id: {id} from database...");
+        _logger.LogInformation($"Trying to get greeting with id: {id} from database...");
         return GetGreeting(id);
     }
 
@@ -56,13 +48,13 @@ public class MemoryGreetingRepository : IGreetingRepository
     {
         if (GetGreeting(greeting.Id) != null)
         {
-            _logger.Warning("Id already exists.");
+            _logger.LogWarning("Id already exists.");
             return false;
         }
         else
         {
             _greetingDatabase.Add(greeting);
-            _logger.Information($"Added new greeting with id {greeting.Id} to database.");
+            _logger.LogInformation($"Added new greeting with id {greeting.Id} to database.");
             return true;
         }
     }
@@ -78,7 +70,7 @@ public class MemoryGreetingRepository : IGreetingRepository
 
         if (g == null)
         {
-            _logger.Warning("No such id.");
+            _logger.LogWarning("No such id.");
             return false;
         }
         else
@@ -86,7 +78,7 @@ public class MemoryGreetingRepository : IGreetingRepository
             _greetingDatabase.Remove(g);
             _greetingDatabase.Add(updatedGreeting);
 
-            _logger.Information($"Updated greeting {updatedGreeting.Id}.");
+            _logger.LogInformation($"Updated greeting {updatedGreeting.Id}.");
 
             return true;
         }
@@ -98,14 +90,14 @@ public class MemoryGreetingRepository : IGreetingRepository
 
         if (g == null)
         {
-            _logger.Warning("No such id");
+            _logger.LogWarning("No such id");
             return false;
         }
         else
         {
             _greetingDatabase.Remove(g);
 
-            _logger.Information($"Deleted greeting {id}.");
+            _logger.LogInformation($"Deleted greeting {id}.");
 
             return true;
         }

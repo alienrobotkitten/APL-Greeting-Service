@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// Summary description for Class1
-/// </summary>
+namespace GreetingService.Infrastructure;
+
 public class AppSettingsUserService : IUserService
 {
-    private IConfiguration _config;
-    private ILogger<AppSettingsUserService> _logger;
+    private readonly IConfiguration _config;
+    private readonly ILogger<AppSettingsUserService> _logger;
 
     public AppSettingsUserService(IConfiguration config, ILogger<AppSettingsUserService> logger)
     {
@@ -25,7 +24,7 @@ public class AppSettingsUserService : IUserService
             return storedPassword == password;
         }
 
-        _logger.LogWarning($"User '{username}' did not provide valid credentials.");
+        _logger.LogWarning($"User '{username}' did not authenticate successfully.");
         return false;
     }
 }

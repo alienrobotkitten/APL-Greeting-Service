@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
+namespace GreetingService.API;
 public class BasicAuthFilter : IAuthorizationFilter
 {
     private readonly string _realm;

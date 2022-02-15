@@ -7,12 +7,11 @@ using System.Text.Json;
 namespace GreetingService.Infrastructure;
 public class FileGreetingRepository : IGreetingRepository
 {
-    private string _filename;
-    private IConfiguration _config;
-    private string? _logfilepath;
-    private JsonSerializerOptions _serializerOptions;
-    private List<Greeting> _greetingDatabase;
-    private ILogger<FileGreetingRepository> _logger;
+    private readonly string _filename;
+    private readonly IConfiguration _config;
+    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly List<Greeting> _greetingDatabase;
+    private readonly ILogger<FileGreetingRepository> _logger;
 
     public FileGreetingRepository(IConfiguration config, ILogger<FileGreetingRepository> logger)
     {

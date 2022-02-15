@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-/// <summary>
-/// Summary description for Class1
-/// </summary>
 
+namespace GreetingService.API;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class BasicAuthAttribute : TypeFilterAttribute

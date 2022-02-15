@@ -47,7 +47,7 @@ namespace GreetingService.API.Function
 
                 return (success ? new OkResult() : new NotFoundResult());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new BadRequestResult();
             }
