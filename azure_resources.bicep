@@ -9,7 +9,7 @@ var storageAccountNameblob = '${appName}blob'
 var storageAccountNamelog = '${appName}log' 
 var hostingPlanName = '${appName}host'
 var appInsightsName = '${appName}ins'
-var functionAppName = '${appName}app'
+var functionAppName = appName
 
 resource storageAccount_blob 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: storageAccountNameblob
