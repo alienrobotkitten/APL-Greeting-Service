@@ -14,35 +14,10 @@ public class FileGreetingRepository : IGreetingRepository
     private List<Greeting> _greetingDatabase;
     private ILogger<FileGreetingRepository> _logger;
 
-    //public FileGreetingRepository(IConfiguration config)
-    //{
-    //    _config = config;
-
-    //    _filename = config["GreetingRepositoryPath"] ?? "./TestGreetings.json";
-
-    //    _serializerOptions = new()
-    //    {
-    //        AllowTrailingCommas = true,
-    //        PropertyNameCaseInsensitive = true,
-    //        WriteIndented = true
-    //    };
-
-    //    _logfilepath = config["RepositoryLogPath"] ?? "./greetingrepo.log";
-
-    //    _logger = new LoggerConfiguration()
-    //        .WriteTo.Console()
-    //        .WriteTo.File(_logfilepath)
-    //        .CreateLogger();
-
-    //    _greetingDatabase = ReadDatabaseFromFile();
-    //}
     public FileGreetingRepository(IConfiguration config, ILogger<FileGreetingRepository> logger)
     {
         _config = config;
         _logger = logger;
-
-        _filename = config["GreetingRepositoryPath"] ?? "./TestGreetings.json";
-
 
         _serializerOptions = new()
         {
@@ -51,29 +26,14 @@ public class FileGreetingRepository : IGreetingRepository
             WriteIndented = true
         };
 
+        string configname = config["GreetingRepositoryPath"];
+        _filename = $"{configname}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}.json";
+
+        if (File.Exists(_filename))
+            File.Delete(_filename);
+
         _greetingDatabase = ReadDatabaseFromFile();
     }
-
-    //public FileGreetingRepository(string filename)
-    //{
-    //    _filename = filename;
-
-    //    _serializerOptions = new()
-    //    {
-    //        AllowTrailingCommas = true,
-    //        PropertyNameCaseInsensitive = true,
-    //        WriteIndented = true
-    //    };
-
-    //    _logfilepath = "./greetingrepo.log";
-
-    //    _logger = new LoggerConfiguration()
-    //        .WriteTo.Console()
-    //        .WriteTo.File(_logfilepath)
-    //        .CreateLogger();
-
-    //    _greetingDatabase = ReadDatabaseFromFile();
-    //}
 
     /// <summary>
     /// Gets all greetings.
