@@ -1,14 +1,27 @@
-param appName string
+/* 
+az deployment group create --resource-group helena-rg-dev --template-file azure_resources.bicep
+*/
+param appName string = 'pmq8aiwea'
 param location string = resourceGroup().location
 
 // storage accounts must be between 3 and 24 characters in length and use numbers and lower-case letters only
-var storageAccountName = '${appName}mpq2834' 
-var hostingPlanName = '${appName}mpq2834'
-var appInsightsName = '${appName}mpq2834'
-var functionAppName = '${appName}'
+var storageAccountNameblob = '${appName}bicep945jfblob' 
+var storageAccountNamelog = '${appName}bicep945jflog' 
+var hostingPlanName = '${appName}bicep945jfhost'
+var appInsightsName = '${appName}bicep945jfins'
+var functionAppName = '${appName}app'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
-  name: storageAccountName
+resource storageAccount_blob 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: storageAccountNameblob
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}
+
+resource storageAccount_log 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: storageAccountNamelog
   location: location
   kind: 'StorageV2'
   sku: {
@@ -56,7 +69,7 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
         }
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_blob.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_blob.id, storageAccount_blob.apiVersion).keys[0].value}'
         }
         {
           'name': 'FUNCTIONS_EXTENSION_VERSION'
@@ -68,7 +81,11 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_blob.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_blob.id, storageAccount_blob.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'LoggingStorageAccount'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_log.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount_log.id, storageAccount_log.apiVersion).keys[0].value}'
         }
         // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
         // WEBSITE_RUN_FROM_PACKAGE will be set to 1 by func azure functionapp publish
