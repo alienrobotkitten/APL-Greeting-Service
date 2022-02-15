@@ -3,56 +3,42 @@
     "Timestamp": "0001-01-01T00:00:00",
     "Message": "This is greeting no 0",
     "From": "Helena",
-    "To": "",
+    "To": "Keen",
     "Id": "82dc8be9-fb57-4a61-bdf9-6bdd9383ebcf"
   },
   {
     "Timestamp": "0001-01-01T00:00:00",
     "Message": "This is greeting no 1",
-    "From": "",
-    "To": "",
+    "From": "Valid",
+    "To": "Greeves",
     "Id": "d0a59a9f-68a3-42f0-90f0-0d2c30fd3a07"
   },
   {
     "Timestamp": "0001-01-01T00:00:00",
     "Message": "This is greeting no 2",
-    "From": "",
-    "To": "",
+    "From": "Suwa",
+    "To": "Wardle",
     "Id": "829aadca-9dab-4bb4-b558-0013b6bb9071"
   },
   {
     "Timestamp": "0001-01-01T00:00:00",
     "Message": "This is greeting no 3",
-    "From": "",
-    "To": "",
+    "From": "Annelie",
+    "To": "Tomas",
     "Id": "f6a457d4-3a71-4986-86e3-cfcef6bb9b70"
   },
   {
     "Timestamp": "0001-01-01T00:00:00",
     "Message": "This is greeting no 4",
-    "From": "",
-    "To": "",
+    "From": "Neda",
+    "To": "Inver",
     "Id": "c3641837-362b-43ef-85c8-3b59e5b50380"
   },
   {
-    "Timestamp": "2022-01-27T13:00:26.8083214+01:00",
-    "Message": "hello",
-    "From": "hj",
-    "To": "kg",
-    "Id": "2e06c022-918b-4fa2-9dd2-6d8631b5ef36"
-  },
-  {
-    "Timestamp": "2022-01-27T16:34:33.243572+01:00",
-    "Message": "a new message",
-    "From": "Helena",
-    "To": "Keen",
-    "Id": "e7cafd58-3cf5-4dde-81b5-bc38aa00fd87"
-  },
-  {
-    "Timestamp": "2022-01-27T16:35:38.4459316+01:00",
-    "Message": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "From": "Helena",
-    "To": "Nobody",
-    "Id": "34416c23-69f5-4e66-934f-e6c1847689e4"
+    "Timestamp": "0001-01-01T00:00:00",
+    "Message": null,
+    "From": null,
+    "To": null,
+    "Id": "00000000-0000-0000-0000-000000000000"
   }
 ]

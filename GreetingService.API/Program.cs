@@ -27,8 +27,8 @@ builder.Services.AddSingleton<Serilog.ILogger, Serilog.Core.Logger>(env =>
  });
 builder.Services.AddScoped<IGreetingRepository, FileGreetingRepository>(env =>
 {
-    //IConfiguration? appsettings = env.GetService<IConfiguration>();
-    return new FileGreetingRepository("./data/NewGreetings.json");
+    IConfiguration? appsettings = env.GetService<IConfiguration>();
+    return new FileGreetingRepository(appsettings);
 });
 
 builder.Services.AddScoped<IUserService, AppSettingsUserService>();

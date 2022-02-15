@@ -27,7 +27,7 @@ public class GreetingController : ControllerBase
     }
 
 
-    // GET api/<GreetingController>/5
+    // GET api/<GreetingController>/id
     [HttpGet("{id}")]
     public IActionResult Get(Guid id)
     {
@@ -46,8 +46,8 @@ public class GreetingController : ControllerBase
 
 
     // PUT api/<GreetingController>/5
-    [HttpPut("{id}")]
-    public IActionResult Put(Guid id, [FromBody] Greeting g)
+    [HttpPut]
+    public IActionResult Put([FromBody] Greeting g)
     {
         bool success = _database.Update(g);
         return (success ? Accepted() : NotFound());
@@ -55,8 +55,10 @@ public class GreetingController : ControllerBase
 
 
     //// DELETE api/<GreetingController>/5
-    //[HttpDelete("{id}")]
-    //public void Delete(int id)
-    //{
-    //}
+    [HttpDelete("{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        bool success = _database.Delete(id);
+        return success ? Accepted() : NotFound();
+    }
 }
