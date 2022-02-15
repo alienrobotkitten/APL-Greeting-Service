@@ -1,7 +1,7 @@
 /* 
 az deployment group create --resource-group helena-cicd-dev --template-file azure_resources.bicep
 */
-param appName string = 'helena-cicdtest-dev'
+param appName string = 'helenacicdtestdev'
 param location string = resourceGroup().location
 
 // storage accounts must be between 3 and 24 characters in length and use numbers and lower-case letters only
