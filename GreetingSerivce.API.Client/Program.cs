@@ -13,15 +13,17 @@ public class Program
     private static string _sender = "Default sender";
     private static string _recipient = "Default recipient";
 
-    private static JsonSerializerOptions _serializerOptions;
+    public static JsonSerializerOptions _serializerOptions;
     private static XMLGreetingWriter _xmlGreetingWriter = new();
 
     public static async Task Main(string[] args)
     {
         var authParam = Convert.ToBase64String(Encoding.UTF8.GetBytes("correct:horse"));
         _httpclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authParam);        //Always send this header for all requests from this HttpClient
+        _httpclient.BaseAddress = new Uri("http://localhost:7071/");
         //_httpclient.BaseAddress = new Uri("http://localhost:5131/");
-        _httpclient.BaseAddress = new Uri("https://helena-webapp-dev.azurewebsites.net/");                                              //Always use this part of the uri in all requests sent from this HttpClient
+        //_httpclient.BaseAddress = new Uri("https://helena-webapp-dev.azurewebsites.net/");  
+        //_httpclient.BaseAddress = new Uri("https://helena-function-dev.azurewebsites.net/");                                              //Always use this part of the uri in all requests sent from this HttpClient
 
         _serializerOptions = new()
         {
@@ -158,7 +160,7 @@ Welcome to command line Greeting client
 
         upDatedGreeting.message = message;
 
-        var result = await _httpclient.PutAsJsonAsync<Greeting>($"api/Greeting/{id.ToString()}",
+        var result = await _httpclient.PutAsJsonAsync<Greeting>($"api/Greeting/",
             upDatedGreeting,
             _serializerOptions);
 

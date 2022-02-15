@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Greeting.cs.bak" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Greeting.cs.bak" />
+  </ItemGroup>
+
 </Project>

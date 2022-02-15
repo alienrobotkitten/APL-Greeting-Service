@@ -19,7 +19,28 @@ public class FileGreetingRepository : IGreetingRepository
     {
         _config = config;
 
-        _filename = "./TestGreetings.json";
+        _filename = config["GreetingRepositoryPath"] ?? "./TestGreetings.json";
+
+        _serializerOptions = new()
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true
+        };
+
+        _logfilepath = config["RepositoryLogPath"] ?? "./greetingrepo.log";
+
+        _logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File(_logfilepath)
+            .CreateLogger();
+
+        _greetingDatabase = ReadDatabaseFromFile();
+    }
+
+    public FileGreetingRepository(string filename)
+    {
+        _filename = filename;
 
         _serializerOptions = new()
         {
