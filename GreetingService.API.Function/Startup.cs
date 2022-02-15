@@ -39,7 +39,7 @@ public class Startup : FunctionsStartup
             c.AddSerilog(logger, true);
         });
 
-        builder.Services.AddSingleton<IGreetingRepository, FileGreetingRepository>();
+        builder.Services.AddSingleton<IGreetingRepository, MemoryGreetingRepository>();
 
         builder.Services.AddScoped<IUserService, HardCodedUserService>();
 
