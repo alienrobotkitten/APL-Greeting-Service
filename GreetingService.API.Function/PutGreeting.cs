@@ -42,7 +42,7 @@ namespace GreetingService.API.Function
             string body = await req.ReadAsStringAsync();
             try
             {
-                Greeting g = JsonSerializer.Deserialize<Greeting>(body, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                Greeting g = body.ToGreeting();
                 bool success = await Task.Run(() => _database.Update(g));
 
                 return (success ? new OkResult() : new NotFoundResult());
