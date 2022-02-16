@@ -18,10 +18,10 @@ namespace GreetingService.API.Function
     public class PutGreeting
     {
         private readonly ILogger<PutGreeting> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
+        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
@@ -43,9 +43,11 @@ namespace GreetingService.API.Function
             try
             {
                 Greeting g = body.ToGreeting();
-                bool success = await Task.Run(() => _database.Update(g));
+                bool success = await _database.UpdateAsync(g);
 
-                return (success ? new OkResult() : new NotFoundResult());
+                return success ?
+                    new OkObjectResult("Greeting was updated.")
+                    : new StatusCodeResult(410);
             }
             catch (Exception)
             {

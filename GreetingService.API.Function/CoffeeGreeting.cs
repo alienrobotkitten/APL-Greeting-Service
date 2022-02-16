@@ -15,10 +15,10 @@ namespace GreetingService.API.Function
     public class CoffeeGreeting
     {
         private readonly ILogger<CoffeeGreeting> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public CoffeeGreeting(ILogger<CoffeeGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
+        public CoffeeGreeting(ILogger<CoffeeGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;

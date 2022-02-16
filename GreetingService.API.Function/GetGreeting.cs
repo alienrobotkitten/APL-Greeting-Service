@@ -18,10 +18,10 @@ namespace GreetingService.API.Function
     public class GetGreeting
     {
         private readonly ILogger<GetGreeting> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
+        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
@@ -44,9 +44,11 @@ namespace GreetingService.API.Function
                 return new BadRequestObjectResult($"{id} is not a valid Guid");
 
             #nullable enable
-            Greeting? g = await Task.Run(() => _database.Get(guid));
+            Greeting? g = await _database.GetAsync(guid);
 
-            return (g == null ? new NotFoundResult() : new OkObjectResult(g));
+            return g != null ? 
+                new OkObjectResult(g) 
+                : new StatusCodeResult(410);
         }
     }
 }

@@ -17,10 +17,10 @@ namespace GreetingService.API.Function
     public class DeleteGreeting
     {
         private readonly ILogger<DeleteGreeting> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public DeleteGreeting(ILogger<DeleteGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
+        public DeleteGreeting(ILogger<DeleteGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
@@ -40,11 +40,13 @@ namespace GreetingService.API.Function
                 return new UnauthorizedResult();
 
             if (!Guid.TryParse(id, out var guid))
-                return new BadRequestObjectResult($"{id} is not a valid Guid");
+                return new BadRequestObjectResult($"{guid.ToString()} is not a valid Guid");
 
-            bool success = await Task.Run(() => _database.Delete(guid));
+            bool success = await _database.DeleteAsync(guid);      
 
-            return success ? new OkResult() : new NotFoundResult();
+            return success ? 
+                new OkObjectResult(guid.ToString() + " was deleted.") 
+                : new StatusCodeResult(410);
         }
     }
 }

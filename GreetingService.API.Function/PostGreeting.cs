@@ -18,10 +18,10 @@ namespace GreetingService.API.Function
     public class PostGreeting
     {
         private readonly ILogger<PostGreeting> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepository database, IAuthHandler authHandler)
+        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
@@ -44,9 +44,11 @@ namespace GreetingService.API.Function
             try
             {
                 Greeting g = body.ToGreeting();
-                bool success = await Task.Run(() => _database.Create(g));
+                bool success = await _database.CreateAsync(g);
 
-                return (success ? new OkResult() : new ConflictResult());
+                return success ? 
+                    new OkObjectResult("Greeting was created.") 
+                    : new ConflictObjectResult($"Greeting with guid {g.Id.ToString()} already exists.");
             }
             catch (Exception)
             {

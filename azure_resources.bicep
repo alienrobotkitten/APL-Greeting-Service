@@ -72,6 +72,14 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${loggingStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(loggingStorageAccount.id, loggingStorageAccount.apiVersion).keys[0].value}'
         }
         {
+          name: 'correct'
+          value: 'horse'
+        }
+        {
+          name: 'battery'
+          value: 'staple'
+        }
+        {
           'name': 'FUNCTIONS_EXTENSION_VERSION'
           'value': '~4'
         }

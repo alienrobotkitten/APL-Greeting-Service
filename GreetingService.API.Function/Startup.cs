@@ -23,7 +23,6 @@ public class Startup : FunctionsStartup
         //Get the Azure Storage Account connection string from our IConfiguration
         builder.Services.AddLogging(c =>
         {
-
             var connectionString = config["GreetingService.API.Function:LoggingStorageAccount"];
             if (string.IsNullOrWhiteSpace(connectionString))
                 return;
@@ -39,7 +38,7 @@ public class Startup : FunctionsStartup
             c.AddSerilog(logger, true);
         });
 
-        builder.Services.AddSingleton<IGreetingRepository, MemoryGreetingRepository>();
+        builder.Services.AddSingleton<IGreetingRepositoryAsync, BlobGreetingRepository>();
 
         builder.Services.AddScoped<IUserService, AppSettingsUserService>();
 

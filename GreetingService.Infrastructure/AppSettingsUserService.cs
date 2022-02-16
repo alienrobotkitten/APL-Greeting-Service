@@ -20,11 +20,11 @@ public class AppSettingsUserService : IUserService
         var entries = _config.AsEnumerable().ToDictionary(x => x.Key, x => x.Value);
         if (entries.TryGetValue(username, out var storedPassword))
         {
-            _logger.LogInformation($"User '{username}' authenticated successfully.");
+            
             return storedPassword == password;
         }
 
-        _logger.LogWarning($"User '{username}' did not authenticate successfully.");
+        _logger.LogWarning($"User '{username}' not found.");
         return false;
     }
 }

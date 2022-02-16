@@ -17,10 +17,10 @@ namespace GreetingService.API.Function
     public class GetGreetings
     {
         private readonly ILogger<GetGreetings> _logger;
-        private readonly IGreetingRepository _database;
+        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandler _authHandler;
 
-        public GetGreetings(ILogger<GetGreetings> log, IGreetingRepository database, IAuthHandler authHandler)
+        public GetGreetings(ILogger<GetGreetings> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
         {
             _logger = log;
             _database = database;
@@ -38,7 +38,7 @@ namespace GreetingService.API.Function
             if (!_authHandler.IsAuthorized(req))
                 return new UnauthorizedResult();
 
-            IEnumerable<Greeting> g = await Task.Run(() => _database.Get());
+            var g = await _database.GetAsync();
 
             return new OkObjectResult(g);
         }
