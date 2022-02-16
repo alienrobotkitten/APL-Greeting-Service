@@ -24,7 +24,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddLogging(c =>
         {
 
-            var connectionString = config["LoggingStorageAccount"];
+            var connectionString = config["GreetingService.API.Function:LoggingStorageAccount"];
             if (string.IsNullOrWhiteSpace(connectionString))
                 return;
 
@@ -41,7 +41,7 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddSingleton<IGreetingRepository, MemoryGreetingRepository>();
 
-        builder.Services.AddScoped<IUserService, HardCodedUserService>();
+        builder.Services.AddScoped<IUserService, AppSettingsUserService>();
 
         builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
     }

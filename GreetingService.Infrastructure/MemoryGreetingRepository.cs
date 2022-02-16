@@ -9,9 +9,9 @@ public class MemoryGreetingRepository : IGreetingRepository
 {
     private IConfiguration _config;
     private List<Greeting> _greetingDatabase;
-    private ILogger _logger;
+    private ILogger<MemoryGreetingRepository> _logger;
 
-    public MemoryGreetingRepository(ILogger logger, IConfiguration config)
+    public MemoryGreetingRepository(ILogger<MemoryGreetingRepository> logger, IConfiguration config)
     {
         _greetingDatabase = new();
         _config = config;
