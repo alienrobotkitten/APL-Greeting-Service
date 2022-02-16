@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
+
 ﻿using System.Text.Json;
 
 namespace GreetingService.Core.Entities;
-=======
-﻿namespace GreetingService.Core.Entities;
->>>>>>> Stashed changes
 
 public class Greeting
 {
@@ -14,9 +11,6 @@ public class Greeting
     public string To { get; set; } = "(empty)";
     public Guid Id { get; set; } = Guid.NewGuid();
 
-<<<<<<< Updated upstream
-    private static readonly JsonSerializerOptions _serializerOptions;
-=======
     public Greeting()
     {
         Id = Guid.NewGuid();
@@ -26,7 +20,6 @@ public class Greeting
         Timestamp = DateTime.Now;
     }
 
->>>>>>> Stashed changes
     /// <summary>
     /// Makes a greeting with current date and time and a new guid
     /// </summary>
@@ -85,41 +78,6 @@ public class Greeting
         Message = message;
         Id = id;
     }
-<<<<<<< Updated upstream
-
-
-    static Greeting()
-    {
-        _serializerOptions = new()
-        {
-            AllowTrailingCommas = true,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        };
-    }
-
-    /// <summary>
-    /// Takes a json string and returns a Greeting. Property names are not case-sensitive.
-    /// </summary>
-    /// <param name="json"></param>
-    /// <returns></returns>
-    public static Greeting JsonDeserialize(string json)
-    {
-        Greeting g = JsonSerializer.Deserialize<Greeting>(json, _serializerOptions);
-        return g;
-    }
-
-    /// <summary>
-    /// Returns a string of this greeting serialized to json.
-    /// </summary>
-    /// <returns></returns>
-    public string JsonSerialize()
-    {
-        string s = JsonSerializer.Serialize<Greeting>(this, _serializerOptions);
-        return s;
-    }
-=======
->>>>>>> Stashed changes
 }
 
 
