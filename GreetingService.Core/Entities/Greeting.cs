@@ -1,18 +1,22 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+<<<<<<< Updated upstream
+﻿using System.Text.Json;
 
 namespace GreetingService.Core.Entities;
+=======
+﻿namespace GreetingService.Core.Entities;
+>>>>>>> Stashed changes
 
 public class Greeting
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string Message { get; set; }
-    public string From { get; set; }
-    public string To { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.Now;
+    public string Message { get; set; } = "(empty)";
+    public string From { get; set; } = "(empty)";
+    public string To { get; set; } = "(empty)";
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-    // private static readonly JsonSerializerSettings _serializerOptions;
-
+<<<<<<< Updated upstream
+    private static readonly JsonSerializerOptions _serializerOptions;
+=======
     public Greeting()
     {
         Id = Guid.NewGuid();
@@ -22,6 +26,7 @@ public class Greeting
         Timestamp = DateTime.Now;
     }
 
+>>>>>>> Stashed changes
     /// <summary>
     /// Makes a greeting with current date and time and a new guid
     /// </summary>
@@ -49,7 +54,6 @@ public class Greeting
         Message = message;
         Id = id;
     }
-
     /// <summary>
     /// Makes a greeting with a new guid.
     /// </summary>
@@ -73,7 +77,6 @@ public class Greeting
     /// <param name="message"></param>
     /// <param name="id"></param>
     /// <param name="timestamp"></param>
-    [JsonConstructor]
     public Greeting(string from, string to, string message, Guid id, DateTime timestamp)
     {
         Timestamp = timestamp;
@@ -82,38 +85,41 @@ public class Greeting
         Message = message;
         Id = id;
     }
+<<<<<<< Updated upstream
 
-    /// <summary>
-    /// Initializes serializer options for the json serializer and deserializer.
-    /// </summary>
+
     static Greeting()
     {
-        //_serializerOptions = new()
-        //{
-        //    AllowTrailingCommas = true,
-        //    PropertyNameCaseInsensitive = true,
-        //    WriteIndented = true
-        //};
+        _serializerOptions = new()
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true
+        };
     }
 
     /// <summary>
     /// Takes a json string and returns a Greeting. Property names are not case-sensitive.
     /// </summary>
     /// <param name="json"></param>
-    /// <returns>A object of class Greeting</returns>
+    /// <returns></returns>
     public static Greeting JsonDeserialize(string json)
     {
-        Greeting g = JsonConvert.DeserializeObject<Greeting>(json/*,_serializerOptions*/);
+        Greeting g = JsonSerializer.Deserialize<Greeting>(json, _serializerOptions);
         return g;
     }
 
     /// <summary>
     /// Returns a string of this greeting serialized to json.
     /// </summary>
-    /// <returns>Json string</returns>
-    public string ToJson()
+    /// <returns></returns>
+    public string JsonSerialize()
     {
-        string s = JsonConvert.SerializeObject(this/*, _serializerOptions*/);
+        string s = JsonSerializer.Serialize<Greeting>(this, _serializerOptions);
         return s;
     }
+=======
+>>>>>>> Stashed changes
 }
+
+
