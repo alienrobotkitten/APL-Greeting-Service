@@ -88,9 +88,9 @@ jobs:
             az group create -l westeurope -n helena-cicd-dev
             az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=helenatestdev
       
-      # - name: Sleep
-      #   run: sleep 60s
-      #   shell: bash
+      - name: Sleep
+        run: sleep 60s
+        shell: bash
 
   deploy:
     runs-on: ubuntu-latest
