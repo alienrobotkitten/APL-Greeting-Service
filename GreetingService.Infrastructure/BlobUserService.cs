@@ -1,55 +1,61 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace GreetingService.Infrastructure;
 
-public class BlobUserService : IUserService
+public class BlobUserService : IUserServiceAsync
 {
-    private const string _blobName = "user.json";
     private readonly IConfiguration _config;
     private readonly ILogger<BlobUserService> _logger;
     private readonly string _connectionString;
-    private readonly BlobContainerClient _userBlobContainerClient;
-    private readonly string _containerName;
+    private readonly string _containerName = "users";
+    private BlobContainerClient _userBlobContainerClient;
+    private const string _blobName = "user.json";
+    private BlobClient _userBlobClient;
+    private Dictionary<string, string> _users;
 
     public BlobUserService(IConfiguration config, ILogger<BlobUserService> logger)
     {
         _config = config;
         _logger = logger;
-        _connectionString = _config["LoggingStorageAccount"];
-        _containerName = "users";
-        _userBlobContainerClient = new BlobContainerClient(_connectionString, _containerName);
 
-        _userBlobContainerClient.CreateIfNotExistsAsync();
-        _userBlobClient = _userBlobContainerClient.GetBlobClient(_blobName);
+        _connectionString = _config["LoggingStorageAccount"];
     }
 
-    public bool IsValidUser(string username, string password)
+    public async Task<bool> IsValidUser(string username, string password)
     {
-        var blobClient = _userBlobClient.
-        if (await blobClient.ExistsAsync())
+        _userBlobContainerClient = new BlobContainerClient(_connectionString, _containerName);
+
+        if (await _userBlobContainerClient.ExistsAsync())
         {
-            Azure.Response<BlobDownloadResult> blobContent = await blobClient.DownloadContentAsync();
-            Greeting g = blobContent.Value.Content.ToObjectFromJson<Greeting>();
-            _logger.LogInformation($"Successfully retrieved greeting with id: {id}");
-            return g;
+            _userBlobClient = _userBlobContainerClient.GetBlobClient(_blobName);
+
+            if (await _userBlobClient.ExistsAsync())
+            {
+                Azure.Response<BlobDownloadResult> blobContent = await _userBlobClient.DownloadContentAsync();
+                _users = blobContent.Value.Content.ToObjectFromJson<Dictionary<string, string>>();
+
+                if (_users.TryGetValue(username, out var storedPassword))
+                {
+                    return storedPassword == password;
+                }
+                else
+                {
+                    _logger.LogWarning($"User '{username}' not found.");
+                    return false;
+                }
+            }
+            else
+            {
+                throw new Exception("There is no blob with user information.");
+            }
         }
         else
         {
-            _logger.LogWarning($"greeting with id: {id} was not found in database.");
-            return null;
+            throw new Exception("There is no container with user information blobs.");
         }
-
-        var entries = _config.AsEnumerable().ToDictionary(x => x.Key, x => x.Value);
-        if (entries.TryGetValue(username, out var storedPassword))
-        {
-            
-            return storedPassword == password;
-        }
-
-        _logger.LogWarning($"User '{username}' not found.");
-        return false;
     }
 }
