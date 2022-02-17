@@ -1,6 +1,7 @@
 ﻿using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
+using GreetingService.Infrastructure.GreetingRepositories;
+using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

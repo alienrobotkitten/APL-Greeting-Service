@@ -1,6 +1,6 @@
 ﻿using GreetingService.Core.Interfaces;
 
-namespace GreetingService.Infrastructure;
+namespace GreetingService.Infrastructure.UserServices;
 
 public class HardCodedUserService : IUserService
 {
@@ -17,7 +17,7 @@ public class HardCodedUserService : IUserService
             && !string.IsNullOrEmpty(password)
             && _users.ContainsKey(username))
         {
-            return (_users[username] == password);
+            return _users[username] == password;
         }
         else
         {

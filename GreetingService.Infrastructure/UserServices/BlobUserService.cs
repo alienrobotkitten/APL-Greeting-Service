@@ -4,7 +4,7 @@ using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace GreetingService.Infrastructure;
+namespace GreetingService.Infrastructure.UserServices;
 
 public class BlobUserService : IUserServiceAsync
 {

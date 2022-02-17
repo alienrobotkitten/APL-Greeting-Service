@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace GreetingService.Infrastructure;
+namespace GreetingService.Infrastructure.GreetingRepositories;
 public class BlobGreetingRepository : IGreetingRepositoryAsync
 {
     private IConfiguration _config;

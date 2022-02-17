@@ -7,6 +7,7 @@ using Serilog.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
+using GreetingService.Infrastructure.GreetingRepositories;
 
 namespace GreetingService.Infrastructure.Test;
 
