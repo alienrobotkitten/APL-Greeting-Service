@@ -50,12 +50,14 @@ public class BlobUserService : IUserServiceAsync
             }
             else
             {
-                throw new Exception("There is no blob with user information.");
+                _logger.LogError("There is no blob with user information.");
+                return false;
             }
         }
         else
         {
-            throw new Exception("There is no container with user information blobs.");
+            _logger.LogError("There is no container with user information blobs.");
+            return false;
         }
     }
 }
