@@ -27,7 +27,7 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
             WriteIndented = true
         };
 
-        _connectionString = _config["GreetingService.API.Function:LoggingStorageAccount"];
+        _connectionString = _config["LoggingStorageAccount"];
         _containerName = "greetings";
         _greetingBlobStore = new BlobContainerClient(_connectionString, _containerName);
 
