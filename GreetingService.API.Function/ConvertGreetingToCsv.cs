@@ -14,7 +14,7 @@ namespace GreetingService.API.Function
     public class ConvertGreetingToCsv
     {
         [FunctionName("ConvertGreetingToCsv")]
-        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount")] Stream greetingJsonBlob,
+        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount2")] Stream greetingJsonBlob,
             [Blob("greetings-csv/{name}", FileAccess.Write)] Stream greetingCsvBlob,
             ILogger log)
         {

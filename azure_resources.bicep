@@ -6,7 +6,7 @@ var storageAccountName = '${substring(appName,0,10)}${uniqueString(resourceGroup
 var loggingStorageAccountName = '${substring(appName,0,7)}log${uniqueString(resourceGroup().id)}' 
 var hostingPlanName = '${appName}${uniqueString(resourceGroup().id)}'
 var appInsightsName = '${appName}${uniqueString(resourceGroup().id)}'
-var functionAppName = 'appName'
+var functionAppName = '${appName}'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: storageAccountName
