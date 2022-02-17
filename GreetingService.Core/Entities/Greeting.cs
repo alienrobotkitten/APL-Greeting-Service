@@ -33,6 +33,7 @@ public class Greeting
         Message = message;
     }
 
+
     /// <summary>
     /// Makes a greeting with specified guid and current date and time
     /// </summary>
