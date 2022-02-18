@@ -33,18 +33,16 @@ namespace GreetingService.API.Function
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<Greeting>), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Id is not valid guid")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Greeting not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{id}")] HttpRequest req, string id)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{from}/{to}/{id}")] HttpRequest req, string from, string to, string id)
         {
             _logger.LogInformation("C# HTTP trigger function processed a GET by ID request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            if (!Guid.TryParse(id, out var guid))
-                return new BadRequestObjectResult($"{id} is not a valid Guid");
-
+            string greetingName = $"{from}/{to}/{id}";
             #nullable enable
-            Greeting? g = await _database.GetAsync(guid);
+            Greeting? g = await _database.GetAsync(greetingName);
 
             return g != null ? 
                 new OkObjectResult(g) 

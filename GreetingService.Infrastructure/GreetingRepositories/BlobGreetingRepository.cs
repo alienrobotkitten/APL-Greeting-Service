@@ -61,19 +61,19 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     /// </summary>
     /// <param name="id"></param>
     /// <returns>Greeting or null.</returns>
-    public async Task<Greeting>? GetAsync(Guid id)
+    public async Task<Greeting>? GetAsync(string blobName)
     {
-        var blobClient = _greetingBlobStore.GetBlobClient(id.ToString());
+        var blobClient = _greetingBlobStore.GetBlobClient(blobName);
         if (await blobClient.ExistsAsync())
         {
             Azure.Response<BlobDownloadResult> blobContent = await blobClient.DownloadContentAsync();
             Greeting g = blobContent.Value.Content.ToObjectFromJson<Greeting>();
-            _logger.LogInformation($"Successfully retrieved greeting with id: {id}");
+            _logger.LogInformation($"Successfully retrieved greeting {blobName}");
             return g;
         }
         else
         {
-            _logger.LogWarning($"greeting with id: {id} was not found in database.");
+            _logger.LogWarning($"greeting with id: {blobName} was not found in database.");
             return null;
         }
     }
@@ -85,7 +85,8 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     /// <returns></returns>
     public async Task<bool> CreateAsync(Greeting g)
     {
-        var blobClient = _greetingBlobStore.GetBlobClient(g.Id.ToString());
+        string greetingName = $"{g.From}/{g.To}/{g.Id}";
+        var blobClient = _greetingBlobStore.GetBlobClient(greetingName);
         if (await blobClient.ExistsAsync())
         {
             _logger.LogWarning("Id already exists.");
@@ -93,10 +94,10 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
         }
         else
         {
-            blobClient = _greetingBlobStore.GetBlobClient(g.Id.ToString());
+            blobClient = _greetingBlobStore.GetBlobClient(greetingName);
             var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
             await blobClient.UploadAsync(greetingBinary);
-            _logger.LogInformation($"Added new greeting with id {g.Id} to database.");
+            _logger.LogInformation($"Added new greeting with name {greetingName} to database.");
             return true;
         }
     }
@@ -106,40 +107,40 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     /// </summary>
     /// <param name="updatedGreeting"></param>
     /// <returns></returns>
-    public async Task<bool> UpdateAsync(Greeting updatedGreeting)
+    public async Task<bool> UpdateAsync(Greeting g)
     {
-        var blobClient = _greetingBlobStore.GetBlobClient(updatedGreeting.Id.ToString());
-
-        if (await blobClient.ExistsAsync())
+        await foreach (BlobItem b in _greetingBlobStore.GetBlobsAsync())
         {
-            await blobClient.DeleteAsync();
-            var greetingBinary = new BinaryData(updatedGreeting, _jsonSerializerOptions);
-            await blobClient.UploadAsync(greetingBinary);
+            if (b.Name.Contains(g.Id.ToString()))
+            {
+                BlobClient blobClient = _greetingBlobStore.GetBlobClient(b.Name);
+                await blobClient.DeleteAsync();
 
-            _logger.LogInformation($"Updated greeting {updatedGreeting.Id}.");
+                var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
+                await blobClient.UploadAsync(greetingBinary);
+                
+                _logger.LogInformation($"Updated greeting {b.Name}.");
 
-            return true;
+                return true;
+            }
         }
-        else
-        {
-            _logger.LogWarning("No such id.");
-            return false;
-        }
+        _logger.LogWarning("No such greeting.");
+        return false;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(string greetingName)
     {
-        var blobClient = _greetingBlobStore.GetBlobClient(id.ToString());
+        var blobClient = _greetingBlobStore.GetBlobClient(greetingName);
 
         if (await blobClient.ExistsAsync())
         {
             await blobClient.DeleteAsync();
-            _logger.LogInformation($"Deleted greeting {id}.");
+            _logger.LogInformation($"Deleted greeting {greetingName}.");
             return true;
         }
         else
         {
-            _logger.LogWarning("No such id");
+            _logger.LogWarning("No such greeting.");
             return false;
         }
     }
