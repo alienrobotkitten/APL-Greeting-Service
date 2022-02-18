@@ -28,7 +28,7 @@ internal class XMLGreetingWriter
         //this xml serializer does not support serializing interfaces, need to convert to a concrete class
         _serializer.Serialize(_xmlWriter, g);                                   
 
-        Console.WriteLine($"Wrote {g.Count()} greeting(s) to {_filePath}");
+        Console.WriteLine($"Wrote {g.Count} greeting(s) to {_filePath}");
     }
 
     public void Write(string XMLformattedString)

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace GreetingService.Infrastructure;
+namespace GreetingService.Infrastructure.UserServices;
 
 public class AppSettingsUserService : IUserService
 {
@@ -20,7 +20,7 @@ public class AppSettingsUserService : IUserService
         var entries = _config.AsEnumerable().ToDictionary(x => x.Key, x => x.Value);
         if (entries.TryGetValue(username, out var storedPassword))
         {
-            
+
             return storedPassword == password;
         }
 

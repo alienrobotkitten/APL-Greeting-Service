@@ -1,5 +1,6 @@
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
+using GreetingService.Infrastructure.GreetingRepositories;
+using GreetingService.Infrastructure.UserServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 

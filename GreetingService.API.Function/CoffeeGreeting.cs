@@ -15,14 +15,10 @@ namespace GreetingService.API.Function
     public class CoffeeGreeting
     {
         private readonly ILogger<CoffeeGreeting> _logger;
-        private readonly IGreetingRepositoryAsync _database;
-        private readonly IAuthHandler _authHandler;
 
-        public CoffeeGreeting(ILogger<CoffeeGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
+        public CoffeeGreeting(ILogger<CoffeeGreeting> log)
         {
             _logger = log;
-            _database = database;
-            _authHandler = authHandler;
         }
 
         [FunctionName("Coffee")]
@@ -34,7 +30,7 @@ namespace GreetingService.API.Function
             _logger.LogInformation("Client asked for coffee.");
 
             return new ObjectResult("418 I'm a teapot.") { StatusCode = 418 };
-           // return new StatusCodeResult(418);  // I'm a teapot.
+            // return new StatusCodeResult(418);  // I'm a teapot.
         }
     }
 }

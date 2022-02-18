@@ -1,6 +1,7 @@
 ﻿using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
+using GreetingService.Infrastructure.GreetingRepositories;
+using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ public class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        IConfiguration config = builder.GetContext().Configuration;
+        var config = builder.GetContext().Configuration;
 
         builder.Services.AddHttpClient();
         builder.Services.AddLogging();
@@ -29,6 +30,7 @@ public class Startup : FunctionsStartup
 
             var logName = $"azurefunctionapp.log";
             var logger = new LoggerConfiguration()
+                                .WriteTo.Console()
                                 .WriteTo.AzureBlobStorage(connectionString,
                                                           restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
                                                           storageFileName: "{yyyy}/{MM}/{dd}/" + logName,
@@ -40,8 +42,8 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddSingleton<IGreetingRepositoryAsync, BlobGreetingRepository>();
 
-        builder.Services.AddScoped<IUserService, AppSettingsUserService>();
+        builder.Services.AddScoped<IUserServiceAsync, BlobUserService>();
 
-        builder.Services.AddScoped<IAuthHandler, BasicAuthHandler>();
+        builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
     }
 }

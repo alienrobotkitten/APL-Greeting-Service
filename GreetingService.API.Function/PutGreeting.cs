@@ -20,9 +20,9 @@ namespace GreetingService.API.Function
     {
         private readonly ILogger<PutGreeting> _logger;
         private readonly IGreetingRepositoryAsync _database;
-        private readonly IAuthHandler _authHandler;
+        private readonly IAuthHandlerAsync _authHandler;
 
-        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
+        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _database = database;
@@ -37,7 +37,7 @@ namespace GreetingService.API.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a PUT request.");
 
-            if (!_authHandler.IsAuthorized(req))
+            if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
             string body = await req.ReadAsStringAsync();

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace GreetingService.Infrastructure;
+namespace GreetingService.Infrastructure.GreetingRepositories;
 public class MemoryGreetingRepository : IGreetingRepository
 {
-    private IConfiguration _config;
-    private List<Greeting> _greetingDatabase;
-    private ILogger<MemoryGreetingRepository> _logger;
+    private readonly IConfiguration _config;
+    private readonly List<Greeting> _greetingDatabase;
+    private readonly ILogger<MemoryGreetingRepository> _logger;
 
     public MemoryGreetingRepository(ILogger<MemoryGreetingRepository> logger, IConfiguration config)
     {
