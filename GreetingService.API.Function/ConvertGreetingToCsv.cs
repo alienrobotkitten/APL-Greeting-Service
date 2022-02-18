@@ -14,20 +14,19 @@ namespace GreetingService.API.Function
     public class ConvertGreetingToCsv
     {
         [FunctionName("ConvertGreetingToCsv")]
-        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount2")] Stream greetingJsonBlob,
+        public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount")] Stream greetingJsonBlob,
             [Blob("greetings-csv/{name}", FileAccess.Write)] Stream greetingCsvBlob,
             ILogger log)
         {
             StreamReader blobStreamReader = new(greetingJsonBlob);           
             string jsonString = await blobStreamReader.ReadToEndAsync();
+                Greeting g = jsonString.ToGreeting();
 
-            Greeting g = jsonString.ToGreeting();
-            
-            string csvString = g.ToCsvString();
-            
-            StreamWriter streamWriter = new(greetingCsvBlob);
-            streamWriter.Write(csvString);
-            streamWriter.Close();
+            StreamWriter streamWriter = new(greetingCsvBlob);            
+            streamWriter.WriteLine("id;from;to;message;timestamp");
+            streamWriter.WriteLine(g.ToCsvString());
+
+            await streamWriter.FlushAsync();
 
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{g.Id.ToString()} \n Size: {greetingJsonBlob.Length} Bytes");
 
