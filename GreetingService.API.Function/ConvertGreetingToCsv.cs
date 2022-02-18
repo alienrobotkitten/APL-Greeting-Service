@@ -7,6 +7,7 @@ using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace GreetingService.API.Function
@@ -15,20 +16,22 @@ namespace GreetingService.API.Function
     {
         [FunctionName("ConvertGreetingToCsv")]
         public async Task Run([BlobTrigger("greetings/{name}", Connection = "LoggingStorageAccount")] Stream greetingJsonBlob,
-            [Blob("greetings-csv/{name}", FileAccess.Write)] Stream greetingCsvBlob,
-            ILogger log)
+          string name,
+          [Blob("greetings-csv/{name}.csv", FileAccess.Write, Connection = "LoggingStorageAccount")] Stream greetingCsvBlob,
+          ILogger log)
         {
-            StreamReader blobStreamReader = new(greetingJsonBlob);           
-            string jsonString = await blobStreamReader.ReadToEndAsync();
-                Greeting g = jsonString.ToGreeting();
 
-            StreamWriter streamWriter = new(greetingCsvBlob);            
+            StreamReader blobStreamReader = new(greetingJsonBlob);
+            string jsonString = await blobStreamReader.ReadToEndAsync();
+            Greeting g = jsonString.ToGreeting();
+
+            StreamWriter streamWriter = new(greetingCsvBlob);
             streamWriter.WriteLine("id;from;to;message;timestamp");
             streamWriter.WriteLine(g.ToCsvString());
 
             await streamWriter.FlushAsync();
 
-            log.LogInformation($"C# Blob trigger function Processed blob\n Name:{g.Id.ToString()} \n Size: {greetingJsonBlob.Length} Bytes");
+            log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {greetingJsonBlob.Length} Bytes");
 
         }
     }

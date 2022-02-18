@@ -29,8 +29,8 @@ public static class GreetingExtensions
 
     public static Stream ToCsvStream(this Greeting greetingObject, string delimiter = ";")
     {
-        MemoryStream outputStream = new MemoryStream();
-        StreamWriter streamWriter = new StreamWriter(outputStream);
+        MemoryStream outputStream = new();
+        StreamWriter streamWriter = new(outputStream);
 
         string csvString = ToCsvString(greetingObject, delimiter);
 

@@ -18,9 +18,9 @@ namespace GreetingService.API.Function
     {
         private readonly ILogger<DeleteGreeting> _logger;
         private readonly IGreetingRepositoryAsync _database;
-        private readonly IAuthHandler _authHandler;
+        private readonly IAuthHandlerAsync _authHandler;
 
-        public DeleteGreeting(ILogger<DeleteGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
+        public DeleteGreeting(ILogger<DeleteGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _database = database;
@@ -36,11 +36,11 @@ namespace GreetingService.API.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a DELETE request.");
 
-            if (!_authHandler.IsAuthorized(req))
+            if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
             if (!Guid.TryParse(id, out var guid))
-                return new BadRequestObjectResult($"{guid.ToString()} is not a valid Guid");
+                return new BadRequestObjectResult($"{guid} is not a valid Guid");
 
             bool success = await _database.DeleteAsync(guid);      
 

@@ -2,5 +2,5 @@
 
 public interface IUserServiceAsync
 {
-    Task<bool> IsValidUser(string username, string password);
+    Task<bool> IsValidUserAsync(string username, string password);
 }

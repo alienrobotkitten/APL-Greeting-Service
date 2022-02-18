@@ -1,13 +1,7 @@
 ﻿using GreetingService.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Serilog.Core;
-using Serilog;
-using Serilog.Extensions.Logging;
-using Xunit;
-using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 using GreetingService.Infrastructure.GreetingRepositories;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace GreetingService.Infrastructure.Test;
 
@@ -25,5 +19,4 @@ public class Startup
             c.AddSerilog(logger, true);
         });
     }
-    //public IHostBuilder CreateHostBuilder([AssemblyName assemblyName]) { }
 }

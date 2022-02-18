@@ -8,14 +8,12 @@ namespace GreetingService.Infrastructure.GreetingRepositories;
 public class FileGreetingRepository : IGreetingRepository
 {
     private readonly string _filename;
-    private readonly IConfiguration _config;
     private readonly JsonSerializerOptions _serializerOptions;
     private readonly List<Greeting> _greetingDatabase;
     private readonly ILogger<FileGreetingRepository> _logger;
 
     public FileGreetingRepository(IConfiguration config, ILogger<FileGreetingRepository> logger)
     {
-        _config = config;
         _logger = logger;
 
         _serializerOptions = new()

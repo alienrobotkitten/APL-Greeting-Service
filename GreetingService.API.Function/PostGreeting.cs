@@ -20,9 +20,9 @@ namespace GreetingService.API.Function
     {
         private readonly ILogger<PostGreeting> _logger;
         private readonly IGreetingRepositoryAsync _database;
-        private readonly IAuthHandler _authHandler;
+        private readonly IAuthHandlerAsync _authHandler;
 
-        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
+        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _database = database;
@@ -38,7 +38,7 @@ namespace GreetingService.API.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a POST request.");
 
-            if (!_authHandler.IsAuthorized(req))
+            if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
             string body = await req.ReadAsStringAsync();
@@ -49,7 +49,7 @@ namespace GreetingService.API.Function
 
                 return success ? 
                     new OkObjectResult("Greeting was created.") 
-                    : new ConflictObjectResult($"Greeting with guid {g.Id.ToString()} already exists.");
+                    : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
             }
             catch (Exception)
             {

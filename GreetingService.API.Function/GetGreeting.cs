@@ -19,9 +19,9 @@ namespace GreetingService.API.Function
     {
         private readonly ILogger<GetGreeting> _logger;
         private readonly IGreetingRepositoryAsync _database;
-        private readonly IAuthHandler _authHandler;
+        private readonly IAuthHandlerAsync _authHandler;
 
-        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepositoryAsync database, IAuthHandler authHandler)
+        public GetGreeting(ILogger<GetGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _database = database;
@@ -37,7 +37,7 @@ namespace GreetingService.API.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a GET by ID request.");
 
-            if (!_authHandler.IsAuthorized(req))
+            if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
             if (!Guid.TryParse(id, out var guid))

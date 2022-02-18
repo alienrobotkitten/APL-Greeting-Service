@@ -9,10 +9,10 @@ using System.Text.Json;
 namespace GreetingService.Infrastructure.GreetingRepositories;
 public class BlobGreetingRepository : IGreetingRepositoryAsync
 {
-    private IConfiguration _config;
-    private ILogger<BlobGreetingRepository> _logger;
-    private BlobContainerClient _greetingBlobStore;
-    private JsonSerializerOptions? _jsonSerializerOptions;
+    private readonly IConfiguration _config;
+    private readonly ILogger<BlobGreetingRepository> _logger;
+    private readonly BlobContainerClient _greetingBlobStore;
+    private readonly JsonSerializerOptions? _jsonSerializerOptions;
     private readonly string _connectionString;
     private readonly string _containerName;
 

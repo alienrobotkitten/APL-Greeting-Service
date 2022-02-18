@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Authentication;
 
-internal class BasicAuthHandler : IAuthHandler
+internal class BasicAuthHandlerAsync : IAuthHandlerAsync
 {
-    private readonly ILogger<BasicAuthHandler> _log;
-    private readonly IUserService _iuserservice;
+    private readonly ILogger<BasicAuthHandlerAsync> _log;
+    private readonly IUserServiceAsync _iuserservice;
 
-    public BasicAuthHandler(IUserService iuserservice, ILogger<BasicAuthHandler> log)
+    public BasicAuthHandlerAsync(IUserServiceAsync iuserservice, ILogger<BasicAuthHandlerAsync> log)
     {
         _iuserservice = iuserservice;
         _log = log;
     }
-    public bool IsAuthorized(HttpRequest req)
+    public async Task<bool> IsAuthorizedAsync(HttpRequest req)
     {
         try
         {
@@ -40,7 +40,7 @@ internal class BasicAuthHandler : IAuthHandler
                         var user = credentials[0];
                         var password = credentials[1];
 
-                        if (IsAuthorized(user, password))
+                        if (await IsAuthorizedAsync(user, password))
                         {
                             _log.LogInformation($"User {user} authenticated successfully.");
                             return true;
@@ -61,8 +61,8 @@ internal class BasicAuthHandler : IAuthHandler
         return false;
     }
 
-    public bool IsAuthorized(string username, string password)
+    public async Task<bool> IsAuthorizedAsync(string username, string password)
     {
-        return _iuserservice.IsValidUser(username, password);
+        return await _iuserservice.IsValidUserAsync(username, password);
     }
 }
