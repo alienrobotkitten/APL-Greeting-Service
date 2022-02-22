@@ -2,40 +2,43 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "sites_helena_webapp_dev_name": {
-            "defaultValue": "helena-webapp-dev",
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "SecureString"
+        },
+        "sites_helenatestdev_name": {
+            "defaultValue": "helenatestdev",
             "type": "String"
         },
-        "sites_helena_function_dev_name": {
-            "defaultValue": "helena-function-dev",
+        "servers_helena_greeting_sql_dev_name": {
+            "defaultValue": "helena-greeting-sql-dev",
             "type": "String"
         },
-        "serverfarms_NorthEuropePlan_name": {
-            "defaultValue": "NorthEuropePlan",
+        "serverfarms_helenatestdevtstdgdu3trhps_name": {
+            "defaultValue": "helenatestdevtstdgdu3trhps",
             "type": "String"
         },
-        "serverfarms_helena_serviceplan_dev_name": {
-            "defaultValue": "helena-serviceplan-dev",
+        "components_helenatestdevtstdgdu3trhps_name": {
+            "defaultValue": "helenatestdevtstdgdu3trhps",
             "type": "String"
         },
-        "components_helena_appinsights_dev_name": {
-            "defaultValue": "helena-appinsights-dev",
+        "storageAccounts_helenatesttstdgdu3trhps_name": {
+            "defaultValue": "helenatesttstdgdu3trhps",
             "type": "String"
         },
-        "components_helena_funinsights_dev_name": {
-            "defaultValue": "helena-funinsights-dev",
+        "storageAccounts_helenatlogtstdgdu3trhps_name": {
+            "defaultValue": "helenatlogtstdgdu3trhps",
             "type": "String"
         },
-        "storageAccounts_helenafunctionstoragedev_name": {
-            "defaultValue": "helenafunctionstoragedev",
+        "smartdetectoralertrules_failure_anomalies___helenacicdtestdevins_name": {
+            "defaultValue": "failure anomalies - helenacicdtestdevins",
             "type": "String"
         },
-        "smartdetectoralertrules_failure_anomalies___helena_appinsights_dev_name": {
-            "defaultValue": "failure anomalies - helena-appinsights-dev",
+        "smartdetectoralertrules_failure_anomalies___helenatestdevtstdgdu3trhps_name": {
+            "defaultValue": "failure anomalies - helenatestdevtstdgdu3trhps",
             "type": "String"
         },
-        "smartdetectoralertrules_failure_anomalies___helena_funinsights_dev_name": {
-            "defaultValue": "failure anomalies - helena-funinsights-dev",
+        "components_helenacicdtestdevins_externalid": {
+            "defaultValue": "/subscriptions/5bb1b2d9-ed37-4ee3-9053-56954eaa90c7/resourceGroups/helena-cicd-dev/providers/microsoft.insights/components/helenacicdtestdevins",
             "type": "String"
         },
         "actiongroups_application_insights_smart_detection_externalid": {
@@ -46,15 +49,39 @@
     "variables": {},
     "resources": [
         {
+            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___helenacicdtestdevins_name')]",
+            "location": "global",
+            "properties": {
+                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
+                "state": "Enabled",
+                "severity": "Sev3",
+                "frequency": "PT1M",
+                "detector": {
+                    "id": "FailureAnomaliesDetector"
+                },
+                "scope": [
+                    "[parameters('components_helenacicdtestdevins_externalid')]"
+                ],
+                "actionGroups": {
+                    "groupIds": [
+                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
+                    ]
+                }
+            }
+        },
+        {
             "type": "microsoft.insights/components",
             "apiVersion": "2020-02-02",
-            "name": "[parameters('components_helena_appinsights_dev_name')]",
+            "name": "[parameters('components_helenatestdevtstdgdu3trhps_name')]",
             "location": "westeurope",
+            "tags": {
+                "hidden-link:/subscriptions//subscriptions/5bb1b2d9-ed37-4ee3-9053-56954eaa90c7/resourceGroups/helena-cicd-dev/providers/Microsoft.Web/sites/helenatestdev": "Resource"
+            },
             "kind": "web",
             "properties": {
                 "Application_Type": "web",
-                "Flow_Type": "Redfield",
-                "Request_Source": "WebTools16.0",
                 "RetentionInDays": 90,
                 "IngestionMode": "ApplicationInsights",
                 "publicNetworkAccessForIngestion": "Enabled",
@@ -62,37 +89,29 @@
             }
         },
         {
-            "type": "microsoft.insights/components",
-            "apiVersion": "2020-02-02",
-            "name": "[parameters('components_helena_funinsights_dev_name')]",
-            "location": "northeurope",
-            "tags": {
-                "hidden-link:/subscriptions/5bb1b2d9-ed37-4ee3-9053-56954eaa90c7/resourceGroups/helena-rg-dev/providers/Microsoft.Web/sites/helena-function-dev": "Resource"
-            },
-            "kind": "web",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[parameters('servers_helena_greeting_sql_dev_name')]",
+            "location": "westeurope",
+            "kind": "v12.0",
             "properties": {
-                "Application_Type": "web",
-                "Flow_Type": "Redfield",
-                "Request_Source": "AppServiceEnablementCreate",
-                "RetentionInDays": 90,
-                "IngestionMode": "ApplicationInsights",
-                "publicNetworkAccessForIngestion": "Enabled",
-                "publicNetworkAccessForQuery": "Enabled"
+                "administratorLogin": "helenak",
+                "version": "12.0",
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "restrictOutboundNetworkAccess": "Disabled"
             }
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2021-06-01",
-            "name": "[parameters('storageAccounts_helenafunctionstoragedev_name')]",
-            "location": "northeurope",
-            "tags": {
-                "hidden-related:/providers/Microsoft.Web/sites/helena-function-dev": "empty"
-            },
+            "apiVersion": "2021-08-01",
+            "name": "[parameters('storageAccounts_helenatesttstdgdu3trhps_name')]",
+            "location": "westeurope",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
             },
-            "kind": "Storage",
+            "kind": "StorageV2",
             "properties": {
                 "minimumTlsVersion": "TLS1_0",
                 "allowBlobPublicAccess": true,
@@ -115,40 +134,51 @@
                         }
                     },
                     "keySource": "Microsoft.Storage"
-                }
+                },
+                "accessTier": "Hot"
             }
         },
         {
-            "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2021-02-01",
-            "name": "[parameters('serverfarms_helena_serviceplan_dev_name')]",
-            "location": "West Europe",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-08-01",
+            "name": "[parameters('storageAccounts_helenatlogtstdgdu3trhps_name')]",
+            "location": "westeurope",
             "sku": {
-                "name": "F1",
-                "tier": "Free",
-                "size": "F1",
-                "family": "F",
-                "capacity": 0
+                "name": "Standard_LRS",
+                "tier": "Standard"
             },
-            "kind": "app",
+            "kind": "StorageV2",
             "properties": {
-                "perSiteScaling": false,
-                "elasticScaleEnabled": false,
-                "maximumElasticWorkerCount": 1,
-                "isSpot": false,
-                "reserved": false,
-                "isXenon": false,
-                "hyperV": false,
-                "targetWorkerCount": 0,
-                "targetWorkerSizeId": 0,
-                "zoneRedundant": false
+                "minimumTlsVersion": "TLS1_0",
+                "allowBlobPublicAccess": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
             }
         },
         {
             "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2021-02-01",
-            "name": "[parameters('serverfarms_NorthEuropePlan_name')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('serverfarms_helenatestdevtstdgdu3trhps_name')]",
+            "location": "West Europe",
             "sku": {
                 "name": "Y1",
                 "tier": "Dynamic",
@@ -173,10 +203,10 @@
         {
             "type": "microsoft.alertsmanagement/smartdetectoralertrules",
             "apiVersion": "2021-04-01",
-            "name": "[parameters('smartdetectoralertrules_failure_anomalies___helena_appinsights_dev_name')]",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___helenatestdevtstdgdu3trhps_name')]",
             "location": "global",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
@@ -187,33 +217,7 @@
                     "id": "FailureAnomaliesDetector"
                 },
                 "scope": [
-                    "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
-                ],
-                "actionGroups": {
-                    "groupIds": [
-                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
-                    ]
-                }
-            }
-        },
-        {
-            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
-            "apiVersion": "2021-04-01",
-            "name": "[parameters('smartdetectoralertrules_failure_anomalies___helena_funinsights_dev_name')]",
-            "location": "global",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
-                "state": "Enabled",
-                "severity": "Sev3",
-                "frequency": "PT1M",
-                "detector": {
-                    "id": "FailureAnomaliesDetector"
-                },
-                "scope": [
-                    "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
+                    "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
                 ],
                 "actionGroups": {
                     "groupIds": [
@@ -225,10 +229,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/degradationindependencyduration')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/degradationindependencyduration')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -249,34 +253,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/degradationindependencyduration')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "degradationindependencyduration",
-                    "DisplayName": "Degradation in dependency duration",
-                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/degradationinserverresponsetime')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/degradationinserverresponsetime')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -297,34 +277,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/degradationinserverresponsetime')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "degradationinserverresponsetime",
-                    "DisplayName": "Degradation in server response time",
-                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/digestMailConfiguration')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/digestMailConfiguration')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -345,34 +301,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/digestMailConfiguration')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "digestMailConfiguration",
-                    "DisplayName": "Digest Mail Configuration",
-                    "Description": "This rule describes the digest mail preferences",
-                    "HelpUrl": "www.homail.com",
-                    "IsHidden": true,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_billingdatavolumedailyspikeextension')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_billingdatavolumedailyspikeextension')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -393,34 +325,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_billingdatavolumedailyspikeextension')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_billingdatavolumedailyspikeextension",
-                    "DisplayName": "Abnormal rise in daily data volume (preview)",
-                    "Description": "This detection rule automatically analyzes the billing data generated by your application, and can warn you about an unusual increase in your application's billing costs",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/billing-data-volume-daily-spike.md",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_canaryextension')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_canaryextension')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -441,34 +349,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_canaryextension')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_canaryextension",
-                    "DisplayName": "Canary extension",
-                    "Description": "Canary extension",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/",
-                    "IsHidden": true,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_exceptionchangeextension')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_exceptionchangeextension')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -489,34 +373,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_exceptionchangeextension')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_exceptionchangeextension",
-                    "DisplayName": "Abnormal rise in exception volume (preview)",
-                    "Description": "This detection rule automatically analyzes the exceptions thrown in your application, and can warn you about unusual patterns in your exception telemetry.",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/abnormal-rise-in-exception-volume.md",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_memoryleakextension')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_memoryleakextension')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -537,34 +397,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_memoryleakextension')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_memoryleakextension",
-                    "DisplayName": "Potential memory leak detected (preview)",
-                    "Description": "This detection rule automatically analyzes the memory consumption of each process in your application, and can warn you about potential memory leaks or increased memory consumption.",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/memory-leak.md",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_securityextensionspackage')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_securityextensionspackage')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -585,34 +421,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_securityextensionspackage')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_securityextensionspackage",
-                    "DisplayName": "Potential security issue detected (preview)",
-                    "Description": "This detection rule automatically analyzes the telemetry generated by your application and detects potential security issues.",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/application-security-detection-pack.md",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/extension_traceseveritydetector')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/extension_traceseveritydetector')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -633,34 +445,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/extension_traceseveritydetector')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "extension_traceseveritydetector",
-                    "DisplayName": "Degradation in trace severity ratio (preview)",
-                    "Description": "This detection rule automatically analyzes the trace logs emitted from your application, and can warn you about unusual patterns in the severity of your trace telemetry.",
-                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/degradation-in-trace-severity-ratio.md",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/longdependencyduration')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/longdependencyduration')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -681,34 +469,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/longdependencyduration')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "longdependencyduration",
-                    "DisplayName": "Long dependency duration",
-                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/migrationToAlertRulesCompleted')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/migrationToAlertRulesCompleted')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -729,34 +493,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/migrationToAlertRulesCompleted')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "migrationToAlertRulesCompleted",
-                    "DisplayName": "Migration To Alert Rules Completed",
-                    "Description": "A configuration that controls the migration state of Smart Detection to Smart Alerts",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": true,
-                    "IsEnabledByDefault": false,
-                    "IsInPreview": true,
-                    "SupportsEmailNotifications": false
-                },
-                "enabled": false,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/slowpageloadtime')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/slowpageloadtime')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -777,34 +517,10 @@
         {
             "type": "microsoft.insights/components/ProactiveDetectionConfigs",
             "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/slowpageloadtime')]",
-            "location": "northeurope",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
-            ],
-            "properties": {
-                "ruleDefinitions": {
-                    "Name": "slowpageloadtime",
-                    "DisplayName": "Slow page load time",
-                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
-                },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
-            }
-        },
-        {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_appinsights_dev_name'), '/slowserverresponsetime')]",
+            "name": "[concat(parameters('components_helenatestdevtstdgdu3trhps_name'), '/slowserverresponsetime')]",
             "location": "westeurope",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_appinsights_dev_name'))]"
+                "[resourceId('microsoft.insights/components', parameters('components_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "ruleDefinitions": {
@@ -823,35 +539,381 @@
             }
         },
         {
-            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[concat(parameters('components_helena_funinsights_dev_name'), '/slowserverresponsetime')]",
-            "location": "northeurope",
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/CreateIndex')]",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('components_helena_funinsights_dev_name'))]"
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
             ],
             "properties": {
-                "ruleDefinitions": {
-                    "Name": "slowserverresponsetime",
-                    "DisplayName": "Slow server response time",
-                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
-                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
-                    "IsHidden": false,
-                    "IsEnabledByDefault": true,
-                    "IsInPreview": false,
-                    "SupportsEmailNotifications": true
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/connectionPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/default')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "connectionType": "Default"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 2147483648,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "requestedBackupStorageRedundancy": "Local",
+                "maintenanceConfigurationId": "/subscriptions/5bb1b2d9-ed37-4ee3-9053-56954eaa90c7/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                "isLedgerOn": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged",
+                "autoRotationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/AllowAllWindowsAzureIps')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Helena HM')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "165.225.192.199",
+                "endIpAddress": "165.225.192.199"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Helena HM vpn')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "10.246.9.32",
+                "endIpAddress": "10.246.9.32"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/ServiceManaged')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
                 },
-                "enabled": true,
-                "sendEmailsToSubscriptionOwners": true,
-                "customEmails": []
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
             }
         },
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -868,10 +930,34 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {}
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -892,10 +978,23 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/queueServices",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "cors": {
@@ -905,10 +1004,23 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/tableServices",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "cors": {
@@ -918,28 +1030,31 @@
         },
         {
             "type": "Microsoft.Web/sites",
-            "apiVersion": "2021-02-01",
-            "name": "[parameters('sites_helena_function_dev_name')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('sites_helenatestdev_name')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_NorthEuropePlan_name'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_helenatestdevtstdgdu3trhps_name'))]"
             ],
             "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "enabled": true,
                 "hostNameSslStates": [
                     {
-                        "name": "[concat(parameters('sites_helena_function_dev_name'), '.azurewebsites.net')]",
+                        "name": "[concat(parameters('sites_helenatestdev_name'), '.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Standard"
                     },
                     {
-                        "name": "[concat(parameters('sites_helena_function_dev_name'), '.scm.azurewebsites.net')]",
+                        "name": "[concat(parameters('sites_helenatestdev_name'), '.scm.azurewebsites.net')]",
                         "sslState": "Disabled",
                         "hostType": "Repository"
                     }
                 ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_NorthEuropePlan_name'))]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_helenatestdevtstdgdu3trhps_name'))]",
                 "reserved": false,
                 "isXenon": false,
                 "hyperV": false,
@@ -949,7 +1064,7 @@
                     "alwaysOn": false,
                     "http20Enabled": false,
                     "functionAppScaleLimit": 200,
-                    "minimumElasticInstanceCount": 1
+                    "minimumElasticInstanceCount": 0
                 },
                 "scmSiteAlsoStopped": false,
                 "clientAffinityEnabled": false,
@@ -966,61 +1081,12 @@
             }
         },
         {
-            "type": "Microsoft.Web/sites",
-            "apiVersion": "2021-02-01",
-            "name": "[parameters('sites_helena_webapp_dev_name')]",
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/ftp')]",
             "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_helena_serviceplan_dev_name'))]"
-            ],
-            "kind": "app",
-            "properties": {
-                "enabled": true,
-                "hostNameSslStates": [
-                    {
-                        "name": "[concat(parameters('sites_helena_webapp_dev_name'), '.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "hostType": "Standard"
-                    },
-                    {
-                        "name": "[concat(parameters('sites_helena_webapp_dev_name'), '.scm.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "hostType": "Repository"
-                    }
-                ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_helena_serviceplan_dev_name'))]",
-                "reserved": false,
-                "isXenon": false,
-                "hyperV": false,
-                "siteConfig": {
-                    "numberOfWorkers": 1,
-                    "acrUseManagedIdentityCreds": false,
-                    "alwaysOn": false,
-                    "http20Enabled": false,
-                    "functionAppScaleLimit": 0,
-                    "minimumElasticInstanceCount": 0
-                },
-                "scmSiteAlsoStopped": false,
-                "clientAffinityEnabled": true,
-                "clientCertEnabled": false,
-                "clientCertMode": "Required",
-                "hostNamesDisabled": false,
-                "customDomainVerificationId": "7D479BC99F59226819EA18928C9D13FCC1356079EA58351571A6F8466440FA85",
-                "containerSize": 0,
-                "dailyMemoryTimeQuota": 0,
-                "httpsOnly": false,
-                "redundancyMode": "None",
-                "storageAccountRequired": false,
-                "keyVaultReferenceIdentity": "SystemAssigned"
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/ftp')]",
-            "location": "North Europe",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
                 "allow": true
@@ -1028,35 +1094,11 @@
         },
         {
             "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_webapp_dev_name'), '/ftp')]",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/scm')]",
             "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_webapp_dev_name'))]"
-            ],
-            "properties": {
-                "allow": true
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/scm')]",
-            "location": "North Europe",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
-            ],
-            "properties": {
-                "allow": true
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_webapp_dev_name'), '/scm')]",
-            "location": "West Europe",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_webapp_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
                 "allow": true
@@ -1064,11 +1106,11 @@
         },
         {
             "type": "Microsoft.Web/sites/config",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/web')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/web')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
                 "numberOfWorkers": 1,
@@ -1082,16 +1124,15 @@
                     "default.aspx",
                     "index.php"
                 ],
-                "netFrameworkVersion": "v6.0",
+                "netFrameworkVersion": "v4.0",
                 "phpVersion": "5.6",
                 "requestTracingEnabled": false,
                 "remoteDebuggingEnabled": false,
-                "remoteDebuggingVersion": "VS2019",
                 "httpLoggingEnabled": false,
                 "acrUseManagedIdentityCreds": false,
                 "logsDirectorySizeLimit": 35,
                 "detailedErrorLoggingEnabled": false,
-                "publishingUsername": "$helena-function-dev",
+                "publishingUsername": "$helenatestdev",
                 "scmType": "None",
                 "use32BitWorkerProcess": true,
                 "webSocketsEnabled": false,
@@ -1112,85 +1153,7 @@
                 "vnetRouteAllEnabled": false,
                 "vnetPrivatePortsCount": 0,
                 "localMySqlEnabled": false,
-                "ipSecurityRestrictions": [
-                    {
-                        "ipAddress": "Any",
-                        "action": "Allow",
-                        "priority": 1,
-                        "name": "Allow all",
-                        "description": "Allow all access"
-                    }
-                ],
-                "scmIpSecurityRestrictions": [
-                    {
-                        "ipAddress": "Any",
-                        "action": "Allow",
-                        "priority": 1,
-                        "name": "Allow all",
-                        "description": "Allow all access"
-                    }
-                ],
-                "scmIpSecurityRestrictionsUseMain": false,
-                "http20Enabled": false,
-                "minTlsVersion": "1.2",
-                "scmMinTlsVersion": "1.0",
-                "ftpsState": "FtpsOnly",
-                "preWarmedInstanceCount": 0,
-                "functionAppScaleLimit": 200,
-                "functionsRuntimeScaleMonitoringEnabled": false,
-                "minimumElasticInstanceCount": 1,
-                "azureStorageAccounts": {}
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites/config",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_webapp_dev_name'), '/web')]",
-            "location": "West Europe",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_webapp_dev_name'))]"
-            ],
-            "properties": {
-                "numberOfWorkers": 1,
-                "defaultDocuments": [
-                    "Default.htm",
-                    "Default.html",
-                    "Default.asp",
-                    "index.htm",
-                    "index.html",
-                    "iisstart.htm",
-                    "default.aspx",
-                    "index.php",
-                    "hostingstart.html"
-                ],
-                "netFrameworkVersion": "v6.0",
-                "requestTracingEnabled": false,
-                "remoteDebuggingEnabled": false,
-                "httpLoggingEnabled": false,
-                "acrUseManagedIdentityCreds": false,
-                "logsDirectorySizeLimit": 35,
-                "detailedErrorLoggingEnabled": false,
-                "publishingUsername": "$helena-webapp-dev",
-                "scmType": "None",
-                "use32BitWorkerProcess": true,
-                "webSocketsEnabled": false,
-                "alwaysOn": false,
-                "managedPipelineMode": "Integrated",
-                "virtualApplications": [
-                    {
-                        "virtualPath": "/",
-                        "physicalPath": "site\\wwwroot",
-                        "preloadEnabled": false
-                    }
-                ],
-                "loadBalancing": "LeastRequests",
-                "experiments": {
-                    "rampUpRules": []
-                },
-                "autoHealEnabled": false,
-                "vnetRouteAllEnabled": false,
-                "vnetPrivatePortsCount": 0,
-                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 14872,
                 "ipSecurityRestrictions": [
                     {
                         "ipAddress": "Any",
@@ -1215,7 +1178,7 @@
                 "scmMinTlsVersion": "1.0",
                 "ftpsState": "AllAllowed",
                 "preWarmedInstanceCount": 0,
-                "functionAppScaleLimit": 0,
+                "functionAppScaleLimit": 200,
                 "functionsRuntimeScaleMonitoringEnabled": false,
                 "minimumElasticInstanceCount": 0,
                 "azureStorageAccounts": {}
@@ -1223,223 +1186,440 @@
         },
         {
             "type": "Microsoft.Web/sites/deployments",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/02d144aed1024828a46a2771cc955f6a')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/062d4824b4bb4413bbb822d3cb42066f')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
                 "status": 4,
                 "author_email": "N/A",
                 "author": "N/A",
-                "deployer": "ZipDeploy",
-                "message": "Created via a push deployment",
-                "start_time": "2022-02-09T13:04:46.509471Z",
-                "end_time": "2022-02-09T13:04:48.0971203Z",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"17421672215b0884784b5fd328a6c2884c71648c\",\"repoName\":\"alienrobotkitten/APL-Greeting-Service\",\"slotName\":\"production\",\"commitMessage\":\"why doesn't it work in pipeline?\"}",
+                "start_time": "2022-02-18T08:27:02.5605017Z",
+                "end_time": "2022-02-18T08:27:37.6501542Z",
                 "active": false
             }
         },
         {
             "type": "Microsoft.Web/sites/deployments",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/099596dbf7e149c2b8631a26000bda00')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/25467683d9c54d98b2f8a800a7179e06')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
                 "status": 4,
                 "author_email": "N/A",
                 "author": "N/A",
-                "deployer": "ZipDeploy",
-                "message": "Created via a push deployment",
-                "start_time": "2022-02-09T14:37:54.1669776Z",
-                "end_time": "2022-02-09T14:37:56.1357474Z",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"18e0ec6081919cd48458895a6ee38cd44a228037\",\"repoName\":\"alienrobotkitten/APL-Greeting-Service\",\"slotName\":\"production\",\"commitMessage\":\"Squashed commit of the following:\\n\\ncommit be752a33f83c78cb92e48ed1bbe953e94e96bdf6\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Fri Feb 18 12:38:53 2022 +0100\\n\\n    ready for testing and commit to main\\n\\ncommit 0ce6786141422e1316215bc3fcdc555da201398d\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Fri Feb 18 09:54:51 2022 +0100\\n\\n    Update BlobUserService.cs\\n\\ncommit 2f8f19cf63536250998826408aeb551c40af60c3\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Thu Feb 17 16:48:19 2022 +0100\\n\\n    new folder structure, namespaces\\n\\ncommit cbeda12feecfc2ef3527f9e2f8184bde79123dc2\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Thu Feb 17 16:41:13 2022 +0100\\n\\n    work in progress\\n\\ncommit cdccbcf009efc08f1e1f95525618da71794392e3\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Thu Feb 17 16:24:57 2022 +0100\\n\\n    work in progress\\n\\ncommit e64d31877a2dae2a414d870285b5109b0c7b2d13\\nAuthor: alienrobotkitten <helena@karlfeldt.net>\\nDate:   Thu Feb 17 15:47:04 2022 +0100\\n\\n    work in progress\"}",
+                "start_time": "2022-02-18T11:44:50.6422294Z",
+                "end_time": "2022-02-18T11:45:58.9837414Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/504cab794cb74288a7e4c74e8c1ffd5c')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"f9815a7bf4779f27ee5c7a6561a3bde35371aad0\",\"repoName\":\"alienrobotkitten/APL-Greeting-Service\",\"slotName\":\"production\",\"commitMessage\":\"Fix connectionstring in ConvertGreetingToCsv.cs\"}",
+                "start_time": "2022-02-18T10:25:39.6735793Z",
+                "end_time": "2022-02-18T10:26:28.3514352Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/71915afa3bef4779a11b80bd0eb7dbae')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY",
+                "message": "{\"type\":\"deployment\",\"sha\":\"6d30591dc4b78ec027e9e05aa67470cb503e688e\",\"repoName\":\"alienrobotkitten/APL-Greeting-Service\",\"slotName\":\"production\",\"commitMessage\":\"new greeting name (s06e04)\"}",
+                "start_time": "2022-02-18T16:03:12.227707Z",
+                "end_time": "2022-02-18T16:03:50.882965Z",
                 "active": true
             }
         },
         {
-            "type": "Microsoft.Web/sites/deployments",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/2092b2caa466450c93743afc255a038b')]",
-            "location": "North Europe",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
-            ],
-            "properties": {
-                "status": 4,
-                "author_email": "N/A",
-                "author": "N/A",
-                "deployer": "ZipDeploy",
-                "message": "Created via a push deployment",
-                "start_time": "2022-02-09T13:01:09.2148577Z",
-                "end_time": "2022-02-09T13:01:10.9179833Z",
-                "active": false
-            }
-        },
-        {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/Coffee')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/Coffee')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/Coffee/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/Coffee/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/Coffee.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/Coffee",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/Coffee/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/Coffee/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/Coffee.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/Coffee",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/coffee",
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/coffee",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/DeleteGreeting')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/ConvertGreetingToCsv')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/DeleteGreeting/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/DeleteGreeting/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/DeleteGreeting.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/DeleteGreeting",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/ConvertGreetingToCsv/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/ConvertGreetingToCsv/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/ConvertGreetingToCsv.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/ConvertGreetingToCsv",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/greeting/{id}",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/GetGreeting')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/DeleteGreeting')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreeting/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreeting/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/GetGreeting.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/GetGreeting",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/DeleteGreeting/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/DeleteGreeting/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/DeleteGreeting.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/DeleteGreeting",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/greeting/{id}",
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/greeting/{from}/{to}/{id}",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/GetGreetings')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/GetGreeting')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreetings/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreetings/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/GetGreetings.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/GetGreetings",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreeting/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreeting/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/GetGreeting.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/GetGreeting",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/greeting",
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/greeting/{from}/{to}/{id}",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/PostGreeting')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/GetGreetings')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/PostGreeting/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/PostGreeting/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/PostGreeting.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/PostGreeting",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreetings/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/GetGreetings/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/GetGreetings.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/GetGreetings",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/greeting",
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/greeting",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/PutGreeting')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/PostGreeting')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/PutGreeting/",
-                "script_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
-                "config_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/site/wwwroot/PutGreeting/function.json",
-                "test_data_href": "https://helena-function-dev.azurewebsites.net/admin/vfs/data/Functions/sampledata/PutGreeting.dat",
-                "href": "https://helena-function-dev.azurewebsites.net/admin/functions/PutGreeting",
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/PostGreeting/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/PostGreeting/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/PostGreeting.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/PostGreeting",
                 "config": {},
-                "invoke_url_template": "https://helena-function-dev.azurewebsites.net/api/greeting",
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/greeting",
+                "language": "DotNetAssembly",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/PutGreeting')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/PutGreeting/",
+                "script_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/bin/GreetingService.API.Function.dll",
+                "config_href": "https://helenatestdev.azurewebsites.net/admin/vfs/site/wwwroot/PutGreeting/function.json",
+                "test_data_href": "https://helenatestdev.azurewebsites.net/admin/vfs/data/Functions/sampledata/PutGreeting.dat",
+                "href": "https://helenatestdev.azurewebsites.net/admin/functions/PutGreeting",
+                "config": {},
+                "invoke_url_template": "https://helenatestdev.azurewebsites.net/api/greeting",
                 "language": "DotNetAssembly",
                 "isDisabled": false
             }
         },
         {
             "type": "Microsoft.Web/sites/hostNameBindings",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_function_dev_name'), '/', parameters('sites_helena_function_dev_name'), '.azurewebsites.net')]",
-            "location": "North Europe",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_helenatestdev_name'), '/', parameters('sites_helenatestdev_name'), '.azurewebsites.net')]",
+            "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_function_dev_name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('sites_helenatestdev_name'))]"
             ],
             "properties": {
-                "siteName": "helena-function-dev",
+                "siteName": "helenatestdev",
                 "hostNameType": "Verified"
             }
         },
         {
-            "type": "Microsoft.Web/sites/hostNameBindings",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_webapp_dev_name'), '/', parameters('sites_helena_webapp_dev_name'), '.azurewebsites.net')]",
-            "location": "West Europe",
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/CreateIndex')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_webapp_dev_name'))]"
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
             ],
             "properties": {
-                "siteName": "helena-webapp-dev",
-                "hostNameType": "Verified"
+                "autoExecuteValue": "Disabled"
             }
         },
         {
-            "type": "Microsoft.Web/sites/siteextensions",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_helena_webapp_dev_name'), '/Microsoft.AspNetCore.AzureAppServices.SiteExtension')]",
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
             "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_helena_webapp_dev_name'))]"
-            ]
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "weeklyRetention": "PT0S",
+                "monthlyRetention": "PT0S",
+                "yearlyRetention": "PT0S",
+                "weekOfYear": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 7,
+                "diffBackupIntervalInHours": 24
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-08-01-preview",
+            "name": "[concat(parameters('servers_helena_greeting_sql_dev_name'), '/greeting-sqldb-dev/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_helena_greeting_sql_dev_name'), 'greeting-sqldb-dev')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_helena_greeting_sql_dev_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
         },
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default/azure-webjobs-hosts')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/azure-webjobs-hosts')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenafunctionstoragedev_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1452,11 +1632,79 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default/azure-webjobs-secrets')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/azure-webjobs-secrets')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenafunctionstoragedev_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default/greetings')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/greetings-csv')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default/logs')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), '/default/users')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatlogtstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "immutableStorageWithVersioning": {
@@ -1469,16 +1717,40 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
-            "apiVersion": "2021-06-01",
-            "name": "[concat(parameters('storageAccounts_helenafunctionstoragedev_name'), '/default/helena-function-dev')]",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/helenatestdev-bf39647f')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_helenafunctionstoragedev_name'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenafunctionstoragedev_name'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
             ],
             "properties": {
                 "accessTier": "TransactionOptimized",
                 "shareQuota": 5120,
                 "enabledProtocols": "SMB"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/azure-webjobs-blobtrigger-helenatestdev')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "metadata": {}
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
+            "apiVersion": "2021-08-01",
+            "name": "[concat(parameters('storageAccounts_helenatesttstdgdu3trhps_name'), '/default/webjobs-blobtrigger-poison')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('storageAccounts_helenatesttstdgdu3trhps_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_helenatesttstdgdu3trhps_name'))]"
+            ],
+            "properties": {
+                "metadata": {}
             }
         }
     ]

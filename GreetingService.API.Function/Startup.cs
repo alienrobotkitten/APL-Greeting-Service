@@ -3,7 +3,6 @@ using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure.GreetingRepositories;
 using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -34,7 +33,7 @@ public class Startup : FunctionsStartup
                                 .WriteTo.AzureBlobStorage(connectionString,
                                                           restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
                                                           storageFileName: "{yyyy}/{MM}/{dd}/" + logName,
-                                                          outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}")                  
+                                                          outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}")
                                 .CreateLogger();
 
             c.AddSerilog(logger, true);

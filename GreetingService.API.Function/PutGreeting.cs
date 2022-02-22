@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function

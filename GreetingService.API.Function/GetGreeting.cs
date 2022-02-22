@@ -8,7 +8,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,11 +40,11 @@ namespace GreetingService.API.Function
                 return new UnauthorizedResult();
 
             string greetingName = $"{from}/{to}/{id}";
-            #nullable enable
+#nullable enable
             Greeting? g = await _database.GetAsync(greetingName);
 
-            return g != null ? 
-                new OkObjectResult(g) 
+            return g != null ?
+                new OkObjectResult(g)
                 : new StatusCodeResult(410);
         }
     }

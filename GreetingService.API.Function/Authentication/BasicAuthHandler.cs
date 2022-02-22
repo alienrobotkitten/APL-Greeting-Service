@@ -5,7 +5,6 @@ using System;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Authentication;
 
@@ -44,7 +43,8 @@ internal class BasicAuthHandler : IAuthHandler
                         {
                             _log.LogInformation($"User {user} authenticated successfully.");
                             return true;
-                        } else 
+                        }
+                        else
                         {
                             _log.LogWarning("$User {user} did not provide the correct password.");
                             return false;

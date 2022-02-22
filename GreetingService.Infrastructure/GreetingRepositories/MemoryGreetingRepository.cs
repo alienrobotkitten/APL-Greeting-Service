@@ -2,7 +2,6 @@
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace GreetingService.Infrastructure.GreetingRepositories;
 public class MemoryGreetingRepository : IGreetingRepository

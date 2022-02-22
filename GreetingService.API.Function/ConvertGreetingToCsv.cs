@@ -1,14 +1,9 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace GreetingService.API.Function
 {

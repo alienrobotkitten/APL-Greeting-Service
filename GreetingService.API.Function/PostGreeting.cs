@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function
@@ -47,8 +46,8 @@ namespace GreetingService.API.Function
                 Greeting g = body.ToGreeting();
                 bool success = await _database.CreateAsync(g);
 
-                return success ? 
-                    new OkObjectResult("Greeting was created.") 
+                return success ?
+                    new OkObjectResult("Greeting was created.")
                     : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
             }
             catch (Exception)

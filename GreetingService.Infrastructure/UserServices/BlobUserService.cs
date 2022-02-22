@@ -1,5 +1,4 @@
 ﻿using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;

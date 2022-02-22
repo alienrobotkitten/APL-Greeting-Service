@@ -118,7 +118,7 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
 
                 var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
                 await blobClient.UploadAsync(greetingBinary);
-                
+
                 _logger.LogInformation($"Updated greeting {b.Name}.");
 
                 return true;

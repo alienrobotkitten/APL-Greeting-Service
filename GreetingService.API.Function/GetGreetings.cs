@@ -1,5 +1,4 @@
 using GreetingService.API.Function.Authentication;
-using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 

@@ -44,7 +44,8 @@ internal class BasicAuthHandlerAsync : IAuthHandlerAsync
                         {
                             _log.LogInformation($"User {user} authenticated successfully.");
                             return true;
-                        } else 
+                        }
+                        else
                         {
                             _log.LogWarning("$User {user} did not provide the correct password.");
                             return false;
