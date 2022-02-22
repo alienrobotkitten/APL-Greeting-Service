@@ -27,6 +27,16 @@ public static class GreetingExtensions
         return s;
     }
 
+    public static Dictionary<string, string> ToDictionary(this Greeting g)
+    {
+        Dictionary<string, string> result = new();
+        foreach (var property in g.GetType().GetProperties())
+        {
+            result.Add(property.Name, property.GetValue(g).ToString());
+        }
+        return result;
+    }
+
     public static Stream ToCsvStream(this Greeting greetingObject, string delimiter = ";")
     {
         MemoryStream outputStream = new();

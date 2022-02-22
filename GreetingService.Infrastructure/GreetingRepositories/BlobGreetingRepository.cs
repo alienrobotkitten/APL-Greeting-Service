@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -97,6 +98,8 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
             blobClient = _greetingBlobStore.GetBlobClient(greetingName);
             var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
             await blobClient.UploadAsync(greetingBinary);
+            var metaData = g.ToDictionary();
+            await blobClient.SetMetadataAsync(metaData);
             _logger.LogInformation($"Added new greeting with name {greetingName} to database.");
             return true;
         }
@@ -118,7 +121,7 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
 
                 var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
                 await blobClient.UploadAsync(greetingBinary);
-                
+
                 _logger.LogInformation($"Updated greeting {b.Name}.");
 
                 return true;
@@ -143,5 +146,32 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
             _logger.LogWarning("No such greeting.");
             return false;
         }
+    }
+
+    public async Task<IEnumerable<Greeting>> GetAsync(string? from, string? to)
+    {
+        List<Greeting> allGreetings = new();
+
+        _logger.LogInformation("Attempting to get all specified greetings...");
+
+        await foreach (BlobItem blob in _greetingBlobStore.GetBlobsAsync())
+        {
+            blob.Metadata.TryGetValue("from", out var actualFrom);
+            blob.Metadata.TryGetValue("to", out var actualTo);
+
+            if (from != null && from != actualFrom)
+                continue;
+
+            if (to != null && to != actualTo)
+                continue;
+
+            BlobClient blobClient = _greetingBlobStore.GetBlobClient(blob.Name);
+            Azure.Response<BlobDownloadResult> blobContent = await blobClient.DownloadContentAsync();
+            Greeting g = blobContent.Value.Content.ToObjectFromJson<Greeting>();
+            allGreetings.Add(g);
+        }
+
+        _logger.LogInformation($"Retrieved ${allGreetings.Count} greetings.");
+        return allGreetings;
     }
 }
