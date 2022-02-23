@@ -32,15 +32,16 @@ namespace GreetingService.API.Function
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Id is not valid guid")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Greeting not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "greeting/{from}/{to}/{id}")] HttpRequest req, string from, string to, string id)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "greeting/{from}/{to}/{idstring}")] HttpRequest req, string from, string to, string idstring)
         {
             _logger.LogInformation("C# HTTP trigger function processed a DELETE request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            string greetingName = $"{from}/{to}/{id}";
-            bool success = await _database.DeleteAsync(greetingName);
+            string greetingName = $"{from}/{to}/{idstring}";
+            Guid id = Guid.Parse(idstring);
+            bool success = await _database.DeleteAsync(id);
 
             return success ?
                 new OkObjectResult(greetingName + " was deleted.")

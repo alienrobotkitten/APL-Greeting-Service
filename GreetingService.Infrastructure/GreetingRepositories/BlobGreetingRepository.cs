@@ -61,8 +61,9 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     /// </summary>
     /// <param name="id"></param>
     /// <returns>Greeting or null.</returns>
-    public async Task<Greeting>? GetAsync(string blobName)
+    public async Task<Greeting>? GetAsync(Guid id)
     {
+        string blobName = id.ToString();
         var blobClient = _greetingBlobStore.GetBlobClient(blobName);
         if (await blobClient.ExistsAsync())
         {
@@ -118,7 +119,7 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
 
                 var greetingBinary = new BinaryData(g, _jsonSerializerOptions);
                 await blobClient.UploadAsync(greetingBinary);
-                
+
                 _logger.LogInformation($"Updated greeting {b.Name}.");
 
                 return true;
@@ -128,8 +129,9 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
         return false;
     }
 
-    public async Task<bool> DeleteAsync(string greetingName)
+    public async Task<bool> DeleteAsync(Guid id)
     {
+        string greetingName = id.ToString();
         var blobClient = _greetingBlobStore.GetBlobClient(greetingName);
 
         if (await blobClient.ExistsAsync())
@@ -143,5 +145,15 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
             _logger.LogWarning("No such greeting.");
             return false;
         }
+    }
+
+    Task<Greeting>? IGreetingRepositoryAsync.GetAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IGreetingRepositoryAsync.DeleteAsync(Guid id)
+    {
+        throw new NotImplementedException();
     }
 }

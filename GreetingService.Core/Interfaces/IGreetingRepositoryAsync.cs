@@ -4,9 +4,9 @@ namespace GreetingService.Core.Interfaces;
 
 public interface IGreetingRepositoryAsync
 {
-    public Task<Greeting>? GetAsync(string greetingName);
-    public Task<IEnumerable<Greeting>> GetAsync();
-    public Task<bool> CreateAsync(Greeting g);
-    public Task<bool> UpdateAsync(Greeting g);
-    public Task<bool> DeleteAsync(string greetingName);
+    public  Task<Greeting>? GetAsync(Guid id);
+    public  Task<IEnumerable<Greeting>> GetAsync();
+    public  Task<bool> CreateAsync(Greeting g);
+    public  Task<bool> UpdateAsync(Greeting g);
+    public  Task<bool> DeleteAsync(Guid id);
 }
