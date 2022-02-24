@@ -1,4 +1,3 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;

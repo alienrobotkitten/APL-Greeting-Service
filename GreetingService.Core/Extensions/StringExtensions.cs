@@ -21,4 +21,10 @@ public static class StringExtensions
         Greeting g = JsonSerializer.Deserialize<Greeting>(jsonContent, _greetingSerializerOptions);
         return g;
     }
+
+    public static User ToUser(this string jsonContent)
+    {
+        User u = JsonSerializer.Deserialize<User>(jsonContent, _greetingSerializerOptions);
+        return u;
+    }
 }

@@ -1,5 +1,5 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +18,13 @@ namespace GreetingService.API.Function.Users
     public class GetUser
     {
         private readonly ILogger<GetUser> _logger;
-        private readonly GreetingDbContext _database;
+        private readonly GreetingDbContext _db;
         private readonly IAuthHandlerAsync _authHandler;
 
         public GetUser(ILogger<GetUser> log, GreetingDbContext database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
-            _database = database;
+            _db = database;
             _authHandler = authHandler;
         }
 
@@ -41,16 +41,11 @@ namespace GreetingService.API.Function.Users
                 return new UnauthorizedResult();
 
 #nullable enable
-            User? u = await _database.Users.FirstOrDefaultAsync(user => user.Email == email);
-            if (u != null)
-            {
-                u.Password = "";
-                return new OkObjectResult(u);
-            }
-            else
-            {
-                return new StatusCodeResult(410);
-            }
+            User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            return user != null ?
+                new OkObjectResult(user)
+                : new StatusCodeResult(410);
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GreetingService.Core.Entities;
+﻿namespace GreetingService.Core.Entities;
 public class User
 {
     public string FirstName { get; set; }

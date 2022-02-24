@@ -1,6 +1,3 @@
-
-﻿using System.Text.Json;
-
 namespace GreetingService.Core.Entities;
 
 public class Greeting

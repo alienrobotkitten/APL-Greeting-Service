@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -66,5 +67,25 @@ public class BlobUserService : IUserServiceAsync
             }
         }
         return false;
+    }
+
+    public Task<bool> CreateUserAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> GetUserAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> UpdateUserAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteUserAsync(string email)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,4 +1,3 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;

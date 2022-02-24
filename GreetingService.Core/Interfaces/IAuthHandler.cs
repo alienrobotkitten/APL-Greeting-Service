@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace GreetingService.API.Function.Authentication;
+namespace GreetingService.Core.Interfaces;
 
 public interface IAuthHandler
 {

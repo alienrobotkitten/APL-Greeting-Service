@@ -1,6 +1,6 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Interfaces;
+using GreetingService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -17,13 +17,13 @@ namespace GreetingService.API.Function.Users;
 public class GetUsers
 {
     private readonly ILogger<GetUsers> _logger;
-    private readonly IGreetingRepositoryAsync _database;
+    private readonly GreetingDbContext _db;
     private readonly IAuthHandlerAsync _authHandler;
 
-    public GetUsers(ILogger<GetUsers> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+    public GetUsers(ILogger<GetUsers> log, GreetingDbContext database, IAuthHandlerAsync authHandler)
     {
         _logger = log;
-        _database = database;
+        _db = database;
         _authHandler = authHandler;
     }
 
@@ -38,9 +38,12 @@ public class GetUsers
         if (!await _authHandler.IsAuthorizedAsync(req))
             return new UnauthorizedResult();
 
-        var g = await _database.GetAsync();
+        var usersQueryable = _db.Users.AsQueryable();
+        var users = new List<User>();
+        foreach (var user in usersQueryable)
+            users.Add(user);
 
-        return new OkObjectResult(g);
+        return new OkObjectResult(users);
     }
 }
 

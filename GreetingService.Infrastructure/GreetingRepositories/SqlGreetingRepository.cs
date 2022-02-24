@@ -7,7 +7,6 @@ namespace GreetingService.Infrastructure.GreetingRepositories;
 public class SqlGreetingRepository : IGreetingRepositoryAsync
 {
     private GreetingDbContext _greetingDbContext { get; set; }
-
     private ILogger<SqlGreetingRepository> _log;
 
     public SqlGreetingRepository(GreetingDbContext greetingDbContext, ILogger<SqlGreetingRepository> log)
@@ -105,8 +104,48 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
         }
     }
 
-    public Task<IEnumerable<Greeting>> GetAsync(string from, string to)
+    public async Task<IEnumerable<Greeting>> GetAsync(string? fromUser = null, string? toUser = null)
     {
-        throw new NotImplementedException();
+        List<Greeting> greetings;
+
+        if (fromUser != null || toUser != null)
+        {
+            var query = await Task.Run(() =>
+                            from g in _greetingDbContext.Greetings
+                            where g.To == toUser && g.From == fromUser
+                            select g
+                        );
+            greetings = query.ToList();
+            return greetings;
+
+        }
+        else if (fromUser != null || toUser == null)
+        {
+            var query = await Task.Run(() =>
+                            from g in _greetingDbContext.Greetings
+                            where g.From == fromUser
+                            select g
+                        );
+            greetings = query.ToList();
+            return greetings;
+        }
+        else if (fromUser == null || toUser != null)
+        {
+            var query = await Task.Run(() =>
+                            from g in _greetingDbContext.Greetings
+                            where g.To == toUser
+                            select g
+                        );
+            greetings = query.ToList();
+            return greetings;
+        }
+        else
+        {
+            greetings = await Task.Run(() => _greetingDbContext.Greetings.ToList());
+            return greetings;
+
+        }
+        return greetings;
+
     }
 }

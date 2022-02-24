@@ -1,5 +1,5 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
+using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +17,13 @@ namespace GreetingService.API.Function.Users
     public class DeleteUser
     {
         private readonly ILogger<DeleteUser> _logger;
-        private readonly GreetingDbContext _database;
+        private readonly GreetingDbContext _db;
         private readonly IAuthHandlerAsync _authHandler;
 
         public DeleteUser(ILogger<DeleteUser> log, GreetingDbContext database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
-            _database = database;
+            _db = database;
             _authHandler = authHandler;
         }
 
@@ -39,11 +39,12 @@ namespace GreetingService.API.Function.Users
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            User? u = await _database.Users.FirstOrDefaultAsync(user => user.Email == email);
-            bool success = await _database.DeleteAsync(guid);
+#nullable enable
+            User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            _db.Users.Remove(user);
 
-            return success ?
-                new OkObjectResult(greetingName + " was deleted.")
+            return user != null ? 
+                new OkObjectResult(email + " was deleted.")
                 : new StatusCodeResult(410);
         }
     }

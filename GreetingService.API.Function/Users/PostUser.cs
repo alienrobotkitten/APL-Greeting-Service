@@ -1,7 +1,7 @@
-using GreetingService.API.Function.Authentication;
 using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
+using GreetingService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -19,13 +19,13 @@ namespace GreetingService.API.Function.Users
     public class PostUser
     {
         private readonly ILogger<PostUser> _logger;
-        private readonly IGreetingRepositoryAsync _database;
+        private readonly GreetingDbContext _db;
         private readonly IAuthHandlerAsync _authHandler;
 
-        public PostUser(ILogger<PostUser> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+        public PostUser(ILogger<PostUser> log, GreetingDbContext database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
-            _database = database;
+            _db = database;
             _authHandler = authHandler;
         }
 
@@ -42,14 +42,20 @@ namespace GreetingService.API.Function.Users
                 return new UnauthorizedResult();
 
             string body = await req.ReadAsStringAsync();
+
             try
             {
-                Greeting g = body.ToGreeting();
-                bool success = await _database.CreateAsync(g);
+                User user = body.ToUser();
 
-                return success ?
-                    new OkObjectResult("Greeting was created.")
-                    : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
+                User existingUser = await _db.Users.FindAsync(user.Email);
+
+                if (existingUser != null)
+                    return new ConflictResult();
+
+                await Task.Run(() => _db.Users.Add(user));
+
+                return new OkObjectResult("User was added.");
+
             }
             catch (Exception)
             {
