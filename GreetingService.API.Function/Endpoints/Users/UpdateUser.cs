@@ -1,7 +1,6 @@
 using GreetingService.Core.Entities;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
-using GreetingService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -18,13 +17,13 @@ namespace GreetingService.API.Function.Endpoints.Users;
 public class UpdateUser
 {
     private readonly ILogger<UpdateUser> _logger;
-    private readonly GreetingDbContext _db;
+    private readonly IUserServiceAsync _userService;
     private readonly IAuthHandlerAsync _authHandler;
 
-    public UpdateUser(ILogger<UpdateUser> log, GreetingDbContext database, IAuthHandlerAsync authHandler)
+    public UpdateUser(ILogger<UpdateUser> log, IUserServiceAsync userService, IAuthHandlerAsync authHandler)
     {
         _logger = log;
-        _db = database;
+        _userService = userService;
         _authHandler = authHandler;
     }
 
@@ -39,26 +38,23 @@ public class UpdateUser
         if (!await _authHandler.IsAuthorizedAsync(req))
             return new UnauthorizedResult();
 
-        string body = await req.ReadAsStringAsync();
+        User user;
+
         try
         {
-            User user = body.ToUser();
-
-            User toRemove = await _db.Users.FindAsync(user.Email);
-
-            if (toRemove == null)
-                return new NotFoundResult();
-
-            await Task.Run(() => _db.Users.Remove(toRemove));
-            await Task.Run(() => _db.Users.Add(user));
-
-            return new OkObjectResult("User was updated.");
-
+            string body = await req.ReadAsStringAsync();
+            user = body.ToUser();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return new BadRequestResult();
+            return new UnprocessableEntityObjectResult(ex);
         }
+
+        bool success = await _userService.UpdateUserAsync(user);
+
+        return success ?
+            new OkObjectResult("User was added.")
+            : new NotFoundObjectResult("No such user.");
     }
 }
 
