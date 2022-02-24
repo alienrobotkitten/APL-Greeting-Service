@@ -13,7 +13,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function.Greetings;
+namespace GreetingService.API.Function.Endpoints.Greetings;
 
 public class UpdateGreeting
 {

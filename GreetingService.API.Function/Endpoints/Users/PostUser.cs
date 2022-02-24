@@ -14,7 +14,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function.Users
+namespace GreetingService.API.Function.Endpoints.Users
 {
     public class PostUser
     {

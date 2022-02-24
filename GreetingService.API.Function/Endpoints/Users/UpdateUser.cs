@@ -13,7 +13,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function.Users;
+namespace GreetingService.API.Function.Endpoints.Users;
 
 public class UpdateUser
 {
@@ -45,7 +45,7 @@ public class UpdateUser
             User user = body.ToUser();
 
             User toRemove = await _db.Users.FindAsync(user.Email);
-           
+
             if (toRemove == null)
                 return new NotFoundResult();
 
@@ -53,7 +53,7 @@ public class UpdateUser
             await Task.Run(() => _db.Users.Add(user));
 
             return new OkObjectResult("User was updated.");
-     
+
         }
         catch (Exception)
         {

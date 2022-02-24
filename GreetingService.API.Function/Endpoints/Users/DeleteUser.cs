@@ -12,7 +12,7 @@ using Microsoft.OpenApi.Models;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function.Users
+namespace GreetingService.API.Function.Endpoints.Users
 {
     public class DeleteUser
     {
@@ -43,7 +43,7 @@ namespace GreetingService.API.Function.Users
             User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
             _db.Users.Remove(user);
 
-            return user != null ? 
+            return user != null ?
                 new OkObjectResult(email + " was deleted.")
                 : new StatusCodeResult(410);
         }

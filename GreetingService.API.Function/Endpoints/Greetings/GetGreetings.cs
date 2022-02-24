@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function.Greetings
+namespace GreetingService.API.Function.Endpoints.Greetings
 {
     public class GetGreetings
     {
