@@ -23,7 +23,7 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
 
-        builder.Services.AddScoped<IUserServiceAsync, BlobUserService>();
+        builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
 
         builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
 

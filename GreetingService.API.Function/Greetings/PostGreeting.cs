@@ -14,28 +14,29 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Greetings
 {
-    public class PutGreeting
+    public class PostGreeting
     {
-        private readonly ILogger<PutGreeting> _logger;
+        private readonly ILogger<PostGreeting> _logger;
         private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandlerAsync _authHandler;
 
-        public PutGreeting(ILogger<PutGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _database = database;
             _authHandler = authHandler;
         }
 
-        [FunctionName("PutGreeting")]
+        [FunctionName("PostGreeting")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "Greetings" })]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "The OK response")]
-        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Greeting didn't exist")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "greeting")] HttpRequest req)
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.Conflict, Description = "Greeting already exists")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "greeting")] HttpRequest req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a PUT request.");
+            _logger.LogInformation("C# HTTP trigger function processed a POST request.");
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
@@ -44,11 +45,11 @@ namespace GreetingService.API.Function
             try
             {
                 Greeting g = body.ToGreeting();
-                bool success = await _database.UpdateAsync(g);
+                bool success = await _database.CreateAsync(g);
 
                 return success ?
-                    new OkObjectResult("Greeting was updated.")
-                    : new StatusCodeResult(410);
+                    new OkObjectResult("Greeting was created.")
+                    : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
             }
             catch (Exception)
             {

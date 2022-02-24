@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Greetings
 {
     public class GetGreetings
     {

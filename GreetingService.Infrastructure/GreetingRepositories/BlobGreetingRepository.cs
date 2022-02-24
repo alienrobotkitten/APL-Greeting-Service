@@ -16,6 +16,8 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     private readonly string _connectionString;
     private readonly string _containerName;
 
+    public object Users => throw new NotImplementedException();
+
     public BlobGreetingRepository(ILogger<BlobGreetingRepository> logger, IConfiguration config)
     {
         _config = config;
@@ -153,6 +155,11 @@ public class BlobGreetingRepository : IGreetingRepositoryAsync
     }
 
     Task<bool> IGreetingRepositoryAsync.DeleteAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Greeting>> GetAsync(string from, string to)
     {
         throw new NotImplementedException();
     }

@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace GreetingService.API.Function
 {
-    public class CoffeeGreeting
+    public class Coffee
     {
-        private readonly ILogger<CoffeeGreeting> _logger;
+        private readonly ILogger<Coffee> _logger;
 
-        public CoffeeGreeting(ILogger<CoffeeGreeting> log)
+        public Coffee(ILogger<Coffee> log)
         {
             _logger = log;
         }
