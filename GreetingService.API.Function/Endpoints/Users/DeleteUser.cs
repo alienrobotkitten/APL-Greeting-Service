@@ -24,11 +24,8 @@ public class DeleteUser
         _authHandler = authHandler;
     }
 
-    [FunctionName("DeleteGreeting")]
+    [FunctionName("DeleteUser")]
     [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "The OK response")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Id is not valid guid")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "User not found")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "user/{email}")] HttpRequest req, string email)
     {
         _logger.LogInformation("C# HTTP trigger function processed a DELETE request.");

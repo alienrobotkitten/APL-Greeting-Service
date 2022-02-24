@@ -18,9 +18,9 @@ public class SqlUserService : IUserServiceAsync
         _db = dbContext;
     }
 
-    public async Task<bool> IsValidUserAsync(string username, string password)
+    public async Task<bool> IsValidUserAsync(string email, string password)
     {
-        var user = await _db.Users.FindAsync(username);
+        var user = await _db.Users.FindAsync(email);
 
         if (user != null)
         {
@@ -28,7 +28,7 @@ public class SqlUserService : IUserServiceAsync
         }
         else
         {
-            _logger.LogWarning($"User '{username}' not found.");
+            _logger.LogWarning($"User '{email}' not found.");
             return false;
         }
     }
@@ -37,9 +37,8 @@ public class SqlUserService : IUserServiceAsync
     {
         try
         {
-            _db.Users.Add(user);
-            await Task.Run(() => _db.Users.Add(user));
-            await Task.Run(() => _db.SaveChanges());
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
             return true;
         }
         catch (Exception ex)
@@ -50,17 +49,18 @@ public class SqlUserService : IUserServiceAsync
 
     public async Task<User> GetUserAsync(string email)
     {
-        User? user = await Task.Run(() => _db.Users.FirstOrDefault(u => u.Email == email));
+        User? user = await _db.Users.FindAsync(email);
         return user;
     }
 
     public async Task<bool> UpdateUserAsync(User updatedUser)
     {
-        User? user = await Task.Run(() => _db.Users.FirstOrDefault(u => u.Email == updatedUser.Email));
+        User? user = await _db.Users.FindAsync(updatedUser.Email);
+
         if (user != null)
         {
             await Task.Run(() => _db.Users.Update(updatedUser));
-            await Task.Run(() => _db.SaveChanges());
+            await _db.SaveChangesAsync();
             return true;
         }
         else
@@ -71,11 +71,12 @@ public class SqlUserService : IUserServiceAsync
 
     public async Task<bool> DeleteUserAsync(string email)
     {
-        User? user = await Task.Run(() => _db.Users.FirstOrDefault(u => u.Email == email));
+        User? user = await _db.Users.FindAsync(email);
 
         if (user != null)
         {
             await Task.Run(() => _db.Users.Remove(user));
+            await _db.SaveChangesAsync();   
             return true;
         }
         else

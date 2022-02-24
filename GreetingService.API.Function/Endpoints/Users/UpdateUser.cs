@@ -27,11 +27,9 @@ public class UpdateUser
         _authHandler = authHandler;
     }
 
-    [FunctionName("PutGreeting")]
-    [OpenApiOperation(operationId: "Run", tags: new[] { "Greetings" })]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "The OK response")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "User didn't exist")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "greeting")] HttpRequest req)
+    [FunctionName("UpdateGreeting")]
+    [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user")] HttpRequest req)
     {
         _logger.LogInformation("C# HTTP trigger function processed a PUT request.");
 
@@ -53,7 +51,7 @@ public class UpdateUser
         bool success = await _userService.UpdateUserAsync(user);
 
         return success ?
-            new OkObjectResult("User was added.")
+            new OkObjectResult("User was updated.")
             : new NotFoundObjectResult("No such user.");
     }
 }

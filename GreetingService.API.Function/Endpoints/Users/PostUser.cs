@@ -27,12 +27,10 @@ namespace GreetingService.API.Function.Endpoints.Users
             _authHandler = authHandler;
         }
 
-        [FunctionName("PostGreeting")]
-        [OpenApiOperation(operationId: "Run", tags: new[] { "Greetings" })]
-        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.OK, Description = "The OK response")]
-        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.Conflict, Description = "Greeting already exists")]
+        [FunctionName("CreateUser")]
+        [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "greeting")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a POST request.");
 

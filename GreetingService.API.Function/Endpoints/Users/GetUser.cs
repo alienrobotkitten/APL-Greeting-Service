@@ -28,9 +28,6 @@ public class GetUser
 
     [FunctionName("GetUser")]
     [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
-    [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<Greeting>), Description = "The OK response")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Email is not valid email")]
-    [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "User not found")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "user/{email}")] HttpRequest req, string email)
     {
         _logger.LogInformation("C# HTTP trigger function processed a GET by EMAIL request.");
