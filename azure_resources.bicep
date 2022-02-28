@@ -114,8 +114,8 @@ resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
   resource allowAllWindowsAzureIps 'firewallRules@2021-05-01-preview' = {
     name: 'AllowAllWindowsAzureIps'
     properties: {
-      endIpAddress: '165.225.192.1'
-      startIpAddress: '165.225.192.255'
+      endIpAddress: '165.225.192.255'
+      startIpAddress: '165.225.192.1'
     }
   }
 
