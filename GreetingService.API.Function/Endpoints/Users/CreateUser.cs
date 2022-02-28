@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Users
 {
-    public class PostUser
+    public class CreateUser
     {
-        private readonly ILogger<PostUser> _logger;
+        private readonly ILogger<CreateUser> _logger;
         private readonly IAuthHandlerAsync _authHandler;
         private readonly IUserServiceAsync _userService;
 
-        public PostUser(ILogger<PostUser> log, IUserServiceAsync userService, IAuthHandlerAsync authHandler)
+        public CreateUser(ILogger<CreateUser> log, IUserServiceAsync userService, IAuthHandlerAsync authHandler)
         {
             _logger = log;
             _userService = userService;
@@ -34,8 +34,8 @@ namespace GreetingService.API.Function.Endpoints.Users
         {
             _logger.LogInformation("C# HTTP trigger function processed a POST request.");
 
-            if (!await _authHandler.IsAuthorizedAsync(req))
-                return new UnauthorizedResult();
+            //if (!await _authHandler.IsAuthorizedAsync(req))
+            //    return new UnauthorizedResult();
 
             User user;
 
@@ -44,9 +44,13 @@ namespace GreetingService.API.Function.Endpoints.Users
                 string body = await req.ReadAsStringAsync();
                 user = body.ToUser();
             }
+            catch (ArgumentException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
             catch (Exception ex)
             {
-                return new UnprocessableEntityObjectResult(ex);
+                return new UnprocessableEntityObjectResult(ex.Message);
             }
 
             User existingUser = await _userService.GetUserAsync(user.Email);
@@ -59,8 +63,6 @@ namespace GreetingService.API.Function.Endpoints.Users
             return success? 
                 new OkObjectResult("User was added.") 
                 : new BadRequestObjectResult("Something went wrong.");
-
-
         }
     }
 }

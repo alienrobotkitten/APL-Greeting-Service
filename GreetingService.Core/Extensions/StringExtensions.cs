@@ -1,5 +1,6 @@
 ﻿using GreetingService.Core.Entities;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace GreetingService.Core.Extensions;
 
@@ -11,11 +12,6 @@ public static class StringExtensions
         _greetingSerializerOptions = GreetingExtensions._serializerOptions;
     }
 
-    /// <summary>
-    /// Takes a json string and returns a Greeting. Property names are not case-sensitive.
-    /// </summary>
-    /// <param name="json"></param>
-    /// <returns>A object of class Greeting</returns>
     public static Greeting ToGreeting(this string jsonContent)
     {
         Greeting g = JsonSerializer.Deserialize<Greeting>(jsonContent, _greetingSerializerOptions);
@@ -26,5 +22,15 @@ public static class StringExtensions
     {
         User u = JsonSerializer.Deserialize<User>(jsonContent, _greetingSerializerOptions);
         return u;
+    }
+
+    public static bool IsValidEmailAddress(this string email)
+    {
+        string pattern = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+        Match match = Regex.Match(email, pattern);
+        bool isValid = match.Success;
+        //bool isValid = MailAddress.TryCreate(email, out MailAddress? result);
+        return isValid;
+            
     }
 }
