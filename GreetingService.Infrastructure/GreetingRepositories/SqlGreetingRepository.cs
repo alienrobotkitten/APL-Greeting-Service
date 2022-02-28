@@ -1,4 +1,5 @@
 ﻿using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -19,24 +20,36 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
     {
         try
         {
-            await _greetingDbContext.AddAsync<Greeting>(g);
+            User toUser = await _greetingDbContext.Users.FindAsync(g.To);
+            if (toUser == null)
+                throw new UserDoesNotExistException(g.To);
+
+            User fromUser = await _greetingDbContext.Users.FindAsync(g.From);
+            if (fromUser == null)
+                throw new UserDoesNotExistException(g.From);
+
+            await _greetingDbContext.Greetings.AddAsync(g);
             await _greetingDbContext.SaveChangesAsync();
+
             _log.LogInformation($"Successfully added {g.Id} to database.");
             return true;
+        }
+        catch (Exception e) when (e is UserDoesNotExistException or InvalidEmailException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             _log.LogError($"Error when trying to add greeting with id {g.Id}: {ex}");
             return false;
         }
-
     }
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        Greeting gr = await Task.Run(() => _greetingDbContext.Greetings.FirstOrDefault(g => g.Id == id));
         try
         {
+            Greeting gr = await _greetingDbContext.Greetings.FindAsync(id);
             if (gr != null)
             {
                 await Task.Run(() => _greetingDbContext.Greetings.Remove(gr));
@@ -46,14 +59,16 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
             }
             else
             {
-                _log.LogInformation($"No greeting with {id} in database.");
-                return false;
+                throw new GreetingNotFoundException(id.ToString());
             }
+        }
+        catch (Exception e) when (e is UserDoesNotExistException or InvalidEmailException or GreetingNotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
-            _log.LogError($"Error when trying to delete greeting with id {id}: {ex}");
-            return false;
+            throw new Exception($"Error when trying to delete greeting with id {id}.", ex);
         }
     }
 
@@ -61,14 +76,19 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
     {
         try
         {
-            Greeting gr = await Task.Run(() => _greetingDbContext.Greetings.FirstOrDefault(g => g.Id == id));
+            Greeting gr = await _greetingDbContext.Greetings.FindAsync(id);
+            if (gr == null)
+                throw new GreetingNotFoundException(id.ToString());
             _log.LogInformation($"Successfully retrieved {id} from database.");
             return gr;
         }
+        catch (GreetingNotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            _log.LogError($"Error when trying to retrieve greeting with id {id}: {ex}");
-            return null;
+            throw new Exception($"Error when trying to retrieve greeting with id {id}.", ex);
         }
     }
 
@@ -78,29 +98,36 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
         return greetings;
     }
 
-    public async Task<bool> UpdateAsync(Greeting updatedGreeting)
+    public async Task<bool> UpdateAsync(Greeting g)
     {
         try
         {
-            Greeting greetingToRemove = await Task.Run(() => _greetingDbContext.Greetings.FirstOrDefault(g => g.Id == updatedGreeting.Id));
+            Greeting greetingToRemove = await _greetingDbContext.Greetings.FindAsync(g.Id);
             if (greetingToRemove != null)
             {
+                User toUser = await _greetingDbContext.Users.FindAsync(g.To);
+                if (toUser == null)
+                    throw new UserDoesNotExistException(g.To);
+
+                User fromUser = await _greetingDbContext.Users.FindAsync(g.From);
+                if (fromUser == null)
+                    throw new UserDoesNotExistException(g.From);
+
                 await Task.Run(() => _greetingDbContext.Remove(greetingToRemove));
-                await _greetingDbContext.AddAsync<Greeting>(updatedGreeting);
+                await _greetingDbContext.AddAsync<Greeting>(g);
                 await _greetingDbContext.SaveChangesAsync();
-                _log.LogInformation($"Successfully updated {updatedGreeting.Id}.");
+                _log.LogInformation($"Successfully updated {g.Id}.");
                 return true;
             }
             else
             {
-                return false;
+                throw new GreetingNotFoundException(g.Id.ToString());
             }
         }
         catch (Exception ex)
         {
-            _log.LogError($"Error when trying to update greeting with id {updatedGreeting.Id}: {ex}");
-
-            return false;
+            _log.LogError(ex.ToString());
+            throw;
         }
     }
 
@@ -146,6 +173,5 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
 
         }
         return greetings;
-
     }
 }

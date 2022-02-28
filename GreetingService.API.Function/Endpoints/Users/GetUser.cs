@@ -7,8 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using System.Net;
+using System;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Users;
@@ -35,12 +34,17 @@ public class GetUser
         if (!await _authHandler.IsAuthorizedAsync(req))
             return new UnauthorizedResult();
 
-#nullable enable
-        User? user = await _userService.GetUserAsync(email);
+        try
+        {
+            User user = await _userService.GetUserAsync(email);
+            user.Password = "********";
+            return new OkObjectResult(user);
+        }
+        catch (Exception ex)
+        {
+            return new BadRequestObjectResult(ex.Message);
+        }
 
-        return user != null ?
-            new OkObjectResult(user)
-            : new StatusCodeResult(410);
     }
 }
 

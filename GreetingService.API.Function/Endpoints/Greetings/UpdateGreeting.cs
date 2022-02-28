@@ -1,4 +1,5 @@
 using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -49,9 +50,15 @@ public class UpdateGreeting
                 new OkObjectResult("Greeting was updated.")
                 : new StatusCodeResult(410);
         }
-        catch (Exception)
+        catch (GreetingNotFoundException ex)
         {
-            return new BadRequestResult();
+            _logger.LogError(ex.ToString());
+            return new BadRequestObjectResult(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return new BadRequestObjectResult(ex.Message);
         }
     }
 }

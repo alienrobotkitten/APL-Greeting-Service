@@ -1,4 +1,5 @@
 using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,6 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Users
@@ -43,26 +43,18 @@ namespace GreetingService.API.Function.Endpoints.Users
             {
                 string body = await req.ReadAsStringAsync();
                 user = body.ToUser();
+                await _userService.CreateUserAsync(user);
+
+                return new OkObjectResult("User was added.");
             }
-            catch (ArgumentException ex)
+            catch  (UserAlreadyExistsException e)
             {
-                return new BadRequestObjectResult(ex.Message);
+                return new ConflictObjectResult(e.Message);
             }
-            catch (Exception ex)
+            catch (InvalidEmailException e)
             {
-                return new UnprocessableEntityObjectResult(ex.Message);
+                return new BadRequestObjectResult(e.Message);
             }
-
-            User existingUser = await _userService.GetUserAsync(user.Email);
-
-            if (existingUser != null)
-                return new ConflictResult();
-
-            bool success = await _userService.CreateUserAsync(user);
-
-            return success? 
-                new OkObjectResult("User was added.") 
-                : new BadRequestObjectResult("Something went wrong.");
         }
     }
 }

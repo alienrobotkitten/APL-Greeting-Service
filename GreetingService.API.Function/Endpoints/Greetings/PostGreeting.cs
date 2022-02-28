@@ -50,9 +50,10 @@ namespace GreetingService.API.Function.Endpoints.Greetings
                     new OkObjectResult("Greeting was created.")
                     : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BadRequestResult();
+                _logger.LogError(ex.ToString());
+                return new BadRequestObjectResult(ex.Message);
             }
         }
     }

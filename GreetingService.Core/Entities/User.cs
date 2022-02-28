@@ -1,4 +1,5 @@
-﻿using GreetingService.Core.Extensions;
+﻿using GreetingService.Core.Exceptions;
+using GreetingService.Core.Extensions;
 
 namespace GreetingService.Core.Entities;
 public class User
@@ -14,7 +15,7 @@ public class User
         {
             bool isValid = value.IsValidEmailAddress();
             if (!isValid)
-                throw new ArgumentException($"{value} is not a valid email adress.");
+                throw new InvalidEmailException(value);
             _email = value;
         }
     }

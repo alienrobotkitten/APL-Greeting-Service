@@ -1,4 +1,5 @@
 using GreetingService.Core.Entities;
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -36,23 +37,23 @@ public class UpdateUser
         if (!await _authHandler.IsAuthorizedAsync(req))
             return new UnauthorizedResult();
 
-        User user;
-
         try
         {
             string body = await req.ReadAsStringAsync();
-            user = body.ToUser();
+            User user = body.ToUser();
+
+            await _userService.UpdateUserAsync(user); 
+
+            return new OkObjectResult("User was updated.");
+        }
+        catch (UserDoesNotExistException ex)
+        {
+            return new NotFoundObjectResult(ex.Message);
         }
         catch (Exception ex)
         {
-            return new UnprocessableEntityObjectResult(ex);
+            return new BadRequestObjectResult(ex.Message);
         }
-
-        bool success = await _userService.UpdateUserAsync(user);
-
-        return success ?
-            new OkObjectResult("User was updated.")
-            : new NotFoundObjectResult("No such user.");
-    }
+     }
 }
 

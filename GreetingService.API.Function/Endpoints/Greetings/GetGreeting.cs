@@ -38,15 +38,18 @@ namespace GreetingService.API.Function.Endpoints.Greetings
 
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
+            try
+            {
+                Guid id = Guid.Parse(idstring);
+                Greeting g = await _database.GetAsync(id);
 
-            string greetingName = $"{from}/{to}/{idstring}";
-#nullable enable
-            Guid id = Guid.Parse(idstring);
-            Greeting? g = await _database.GetAsync(id);
-
-            return g != null ?
-                new OkObjectResult(g)
-                : new StatusCodeResult(410);
+                return new OkObjectResult(g);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return new BadRequestObjectResult(ex.Message);
+            }
         }
     }
 }

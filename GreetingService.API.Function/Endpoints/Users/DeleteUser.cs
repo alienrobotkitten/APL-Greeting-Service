@@ -1,3 +1,4 @@
+using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,10 +35,19 @@ public class DeleteUser
             return new UnauthorizedResult();
 
 #nullable enable
-        bool success = await _userService.DeleteUserAsync(email);
+        try
+        {
+            await _userService.DeleteUserAsync(email);
 
-        return success ?
-            new OkObjectResult(email + " was deleted.")
-            : new NotFoundObjectResult("No such user.");
+            return new OkObjectResult(email + " was deleted.");
+        }
+        catch (InvalidEmailException ex)
+        {
+            return new BadRequestObjectResult(ex.Message);
+        }
+        catch (UserDoesNotExistException ex)
+        {
+            return new NotFoundObjectResult(ex.Message);
+        }
     }
 }
