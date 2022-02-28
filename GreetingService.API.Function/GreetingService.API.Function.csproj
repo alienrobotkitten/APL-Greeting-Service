@@ -34,4 +34,7 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Endpoints\Invoices\" />
+  </ItemGroup>
 </Project>
