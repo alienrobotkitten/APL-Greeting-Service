@@ -24,14 +24,15 @@ public class SqlInvoiceService : IInvoiceService
         _config = config;
     }
 
-    public async Task CreateOrUpdateInvoice(Invoice invoice)
+    public async Task CreateOrUpdateInvoiceAsync(Invoice invoice)
     {
+
         await Task.Run(() => _db.Invoices.Update(invoice));
         _log.LogInformation($"Invoice with id {invoice.Id} added to database.");
         await _db.SaveChangesAsync();
     }
 
-    public async Task<Invoice> GetInvoice(int year, int month, string email)
+    public async Task<Invoice> GetInvoiceAsync(int year, int month, string email)
     {
         Invoice invoice = await Task.Run(() => _db.Invoices.FirstOrDefault(i => i.Year == year && i.Month == month && i.User.Email == email));
         if (invoice == null)
@@ -39,7 +40,7 @@ public class SqlInvoiceService : IInvoiceService
         return invoice;
     }
 
-    public async Task<IEnumerable<Invoice>> GetInvoices(int year, int month)
+    public async Task<IEnumerable<Invoice>> GetInvoicesAsync(int year, int month)
     {
         IEnumerable<Invoice> invoices = await Task.Run(() =>
                                     (from i in _db.Invoices

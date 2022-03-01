@@ -2,7 +2,7 @@
 
 public interface IInvoiceService
 {
-    public Task<IEnumerable<Invoice>> GetInvoices(int year, int month);
-    public Task<Invoice> GetInvoice(int year, int month, string email);
-    public Task CreateOrUpdateInvoice(Invoice invoice);
+    public Task<IEnumerable<Invoice>> GetInvoicesAsync(int year, int month);
+    public Task<Invoice> GetInvoiceAsync(int year, int month, string email);
+    public Task CreateOrUpdateInvoiceAsync(Invoice invoice);
 }

@@ -37,6 +37,12 @@ public static class StringExtensions
         bool isValid = match.Success;
         //bool isValid = MailAddress.TryCreate(email, out MailAddress? result);
         return isValid;
-            
+
+    }
+    public static string GetRandom(this string[] obj)
+    {
+        var random = new Random();
+        int index = random.Next(0,obj.Length);
+        return obj[index];
     }
 }

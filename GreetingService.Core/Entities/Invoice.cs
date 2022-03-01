@@ -13,8 +13,8 @@ public class Invoice
     public List<Greeting> Greetings { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
-    public float Cost { get; set; }
-    public float TotalCost { get; set; }
+    public float PricePerGreeting { get; set; }
+    public float SumTotal { get; set; }
     public string Currency { get; set; }
 
     public Invoice()

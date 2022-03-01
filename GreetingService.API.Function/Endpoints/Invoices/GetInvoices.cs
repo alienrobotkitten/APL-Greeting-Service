@@ -38,7 +38,7 @@ public class GetInvoices
         {
             int y = Int32.Parse(year);
             int m = Int32.Parse(month);
-            IEnumerable<Invoice> invoiceList = await _invoiceService.GetInvoices(y, m);
+            IEnumerable<Invoice> invoiceList = await _invoiceService.GetInvoicesAsync(y, m);
 
             return new OkObjectResult(invoiceList);
         }
