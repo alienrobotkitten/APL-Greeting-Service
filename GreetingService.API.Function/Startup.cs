@@ -2,6 +2,7 @@
 using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
 using GreetingService.Infrastructure.GreetingRepositories;
+using GreetingService.Infrastructure.InvoiceServices;
 using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -22,15 +23,17 @@ public class Startup : FunctionsStartup
         builder.Services.AddLogging();
 
         builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
-
         builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
-
         builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
-
+        builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
+        
         builder.Services.AddDbContext<GreetingDbContext>(options =>
         {
             options.UseSqlServer(config["GreetingDbConnectionString"]);
         });
+
+        //builder.Services.AddEndpointsApiExplorer();
+
 
         //Create a Serilog logger and register it as a logger
         //Get the Azure Storage Account connection string from our IConfiguration

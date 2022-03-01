@@ -24,6 +24,12 @@ public static class StringExtensions
         return u;
     }
 
+    public static Invoice ToInvoice(this string jsonContent)
+    {
+        Invoice i = JsonSerializer.Deserialize<Invoice>(jsonContent, _greetingSerializerOptions);
+        return i;
+    }
+
     public static bool IsValidEmailAddress(this string email)
     {
         string pattern = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
