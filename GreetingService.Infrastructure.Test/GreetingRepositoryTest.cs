@@ -15,16 +15,16 @@ public class GreetingRepositoryTest //: IClassFixture<RepositoryFixture>
     private static readonly Guid _wrongGuid = new Guid("b3138c0f-666a-433d-8f9f-426bca7f40a6");
 
     private static readonly Greeting _newGreeting = new Greeting(
-            "Towa",
-            "Keen",
+            "kalle@ankeborg.com",
+            "kajsa@ankeborg.com",
             "Message from test of created method",
             _newGreetingGuid,
           new DateTime(2022, 01, 25, 14, 25, 10));
 
     private static readonly Greeting _updatedGreeting = new Greeting(
 
-            "new sender",
-            "new receiver",
+            "kalle@ankeborg.com",
+            "kajsa@ankeborg.com",
             "New message",
             _newGreetingGuid,
             new DateTime(2022, 02, 25, 14, 25, 11));
