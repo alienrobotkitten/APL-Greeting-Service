@@ -30,7 +30,7 @@ public class GetInvoices
     [OpenApiOperation(operationId: "Run", tags: new[] { "Invoices" })]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "invoice/{year}/{month}")] HttpRequest req, string year, string month)
     {
-        _logger.LogInformation("C# HTTP trigger function processed a GET by ID request.");
+        _logger.LogInformation("C# HTTP trigger function processed a GET request.");
 
         if (!await _authHandler.IsAuthorizedAsync(req))
             return new UnauthorizedResult();
