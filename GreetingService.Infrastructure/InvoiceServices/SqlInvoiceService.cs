@@ -1,6 +1,7 @@
 ﻿using GreetingService.Core.Entities;
 using GreetingService.Core.Exceptions;
 using GreetingService.Core.Extensions;
+using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -26,7 +27,6 @@ public class SqlInvoiceService : IInvoiceService
 
     public async Task CreateOrUpdateInvoiceAsync(Invoice invoice)
     {
-
         await Task.Run(() => _db.Invoices.Update(invoice));
         _log.LogInformation($"Invoice with id {invoice.Id} added to database.");
         await _db.SaveChangesAsync();
@@ -50,5 +50,18 @@ public class SqlInvoiceService : IInvoiceService
                                     );
         return invoices;
     }
+    //public async Task ProcessGreetingsForInvoices()
+    //{
+    //    var greetings = await _db.GetAsync();
+    //    int nextId = 1;
+    //    foreach (var g in greetings)
+    //    {
+
+    //        int year = g.Timestamp.Year;
+    //        int month = g.Timestamp.Month;
+    //        string userEmail = g.From;
+    //        var invoices = GetInvoiceAsync(year, month, userEmail);
+    //    }
+    //}
 }
 
