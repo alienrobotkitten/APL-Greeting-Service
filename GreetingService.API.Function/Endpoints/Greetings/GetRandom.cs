@@ -35,9 +35,6 @@ namespace GreetingService.API.Function.Endpoints.Greetings
         {
             _logger.LogInformation("C# HTTP trigger function processed a GET request.");
 
-            if (!await _authHandler.IsAuthorizedAsync(req))
-                return new UnauthorizedResult();
-
             try
             {
                 var random = new Random();
