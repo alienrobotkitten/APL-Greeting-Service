@@ -18,6 +18,9 @@ public class SqlUserService : IUserServiceAsync
         _config = config;
         _logger = logger;
         _db = dbContext;
+        var canConnect = _db.Database.CanConnect();
+        if (!canConnect)
+            _logger.LogError("Can't connect to database.");
     }
 
     public async Task<bool> IsValidUserAsync(string email, string password)
@@ -37,25 +40,15 @@ public class SqlUserService : IUserServiceAsync
 
     public async Task<bool> CreateUserAsync(User user)
     {
-        try
-        {
-            User? existingUser = await _db.Users.FindAsync(user.Email);
-            if (existingUser != null)
-                throw new UserAlreadyExistsException(user.Email);
+        User? existingUser = await _db.Users.FindAsync(user.Email);
+        
+        if (existingUser != null)
+            throw new UserAlreadyExistsException(user.Email);
 
-            await _db.Users.AddAsync(user);
-            await _db.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e) when (e is UserAlreadyExistsException or InvalidEmailException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return false;
-        }
+        await _db.Users.AddAsync(user);
+        await _db.SaveChangesAsync();
+        return true;
+
     }
 
     public async Task<User> GetUserAsync(string email)
