@@ -1,17 +1,10 @@
 ﻿using GreetingService.Core.Entities;
-using GreetingService.Core.Exceptions;
-using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GreetingService.Infrastructure.InvoiceServices;
+
 public class SqlInvoiceService : IInvoiceService
 {
     private GreetingDbContext _dataBase;

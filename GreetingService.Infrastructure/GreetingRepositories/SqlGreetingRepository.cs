@@ -143,7 +143,6 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
                             select g
                         );
             greetings = query.ToList();
-            return greetings;
 
         }
         else if (from != null || to == null)
@@ -154,7 +153,6 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
                             select g
                         );
             greetings = query.ToList();
-            return greetings;
         }
         else if (from == null || to != null)
         {
@@ -164,13 +162,10 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
                             select g
                         );
             greetings = query.ToList();
-            return greetings;
         }
         else
         {
             greetings = await Task.Run(() => _greetingDbContext.Greetings.ToList());
-            return greetings;
-
         }
         return greetings;
     }

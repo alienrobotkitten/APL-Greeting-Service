@@ -22,10 +22,10 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddLogging();
 
-        builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
-        builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
         builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
+        builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
         builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
+        builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
         
         builder.Services.AddDbContext<GreetingDbContext>(options =>
         {
