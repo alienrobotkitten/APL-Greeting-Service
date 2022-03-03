@@ -131,36 +131,36 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
         }
     }
 
-    public async Task<IEnumerable<Greeting>> GetAsync(string? fromUser = null, string? toUser = null)
+    public async Task<IEnumerable<Greeting>> GetAsync(string? from = null, string? to = null)
     {
         List<Greeting> greetings;
 
-        if (fromUser != null || toUser != null)
+        if (from != null || to != null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.To == toUser && g.From == fromUser
+                            where g.To == to && g.From == @from
                             select g
                         );
             greetings = query.ToList();
             return greetings;
 
         }
-        else if (fromUser != null || toUser == null)
+        else if (from != null || to == null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.From == fromUser
+                            where g.From == @from
                             select g
                         );
             greetings = query.ToList();
             return greetings;
         }
-        else if (fromUser == null || toUser != null)
+        else if (from == null || to != null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.To == toUser
+                            where g.To == to
                             select g
                         );
             greetings = query.ToList();

@@ -9,6 +9,7 @@ public class Greeting
     public DateTime Timestamp { get; set; } = DateTime.Now;
     public string Message { get; set; }
     public Guid Id { get; set; } = Guid.NewGuid();
+    public int InvoiceId { get; set; }
 
     private string _to;
     public string To
