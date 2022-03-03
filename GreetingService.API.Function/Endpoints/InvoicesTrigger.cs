@@ -23,12 +23,13 @@ namespace GreetingService.API.Function
             try
             {
                 await _invoiceService.ProcessGreetingsForInvoices();
+                _log.LogInformation("Greetings were processed and invoices generated.");
             }
             catch (Exception ex)
             {
                 _log.LogError("Greeting processing for invoices failed", ex);
             }
-            _log.LogInformation("Greetings were processed and invoices generated.");
+
         }
     }
 }

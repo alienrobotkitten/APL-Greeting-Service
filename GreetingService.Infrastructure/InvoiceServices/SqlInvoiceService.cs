@@ -57,22 +57,27 @@ public class SqlInvoiceService : IInvoiceService
     }
     public async Task ProcessGreetingsForInvoices()
     {
-        var greetings = await _greetingRepository.GetAsync();
-        var invoices = new List<Invoice>();
+        var greetings = from g in _dataBase.Greetings select g;
+        List<Greeting> greetingsList = greetings.ToList();
         
-        foreach (var greeting in greetings)
+        var users = from u in _dataBase.Users select u;
+        List<User> usersList = users.ToList();
+        
+        var invoicesList = new List<Invoice>();
+        
+        foreach (var greeting in greetingsList)
         {
             string userEmail = greeting.From;
             int month = greeting.Timestamp.Month;
             int year = greeting.Timestamp.Year;
 
-            Invoice? invoice = invoices.FirstOrDefault(i => i.User.Email == userEmail
+            Invoice? invoice = invoicesList.FirstOrDefault(i => i.User.Email == userEmail
                                                             && i.Month == month 
                                                             && i.Year == year);
             if (invoice == null)
             {
                 invoice = new Invoice();
-                invoice.User = await _userService.GetUserAsync(userEmail);
+                invoice.User = usersList.FirstOrDefault(u => u.Email == userEmail);
                 invoice.Greetings = new List<Greeting>();
                 invoice.Greetings.Add(greeting);
                 invoice.Year = year;
@@ -80,6 +85,7 @@ public class SqlInvoiceService : IInvoiceService
                 invoice.Cost = 13.37F;
                 invoice.TotalCost = invoice.Cost;
                 invoice.Currency = "SEK";
+                invoicesList.Add(invoice);
             }
             else
             {
@@ -88,7 +94,7 @@ public class SqlInvoiceService : IInvoiceService
             }
 
         }
-        foreach (var invoice in invoices)
+        foreach (var invoice in invoicesList)
             await CreateOrUpdateInvoiceAsync(invoice);
     }
 }

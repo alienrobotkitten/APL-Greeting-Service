@@ -8,6 +8,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 
@@ -33,27 +34,27 @@ public class Startup : FunctionsStartup
             options.UseSqlServer(config["GreetingDbConnectionString"]);
         });
 
-        //builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddEndpointsApiExplorer();
 
 
         //Create a Serilog logger and register it as a logger
         //Get the Azure Storage Account connection string from our IConfiguration
-        //builder.Services.AddLogging(c =>
-        //{
-        //    var connectionString = config["LoggingStorageAccount"];
-        //    if (string.IsNullOrWhiteSpace(connectionString))
-        //        return;
+        builder.Services.AddLogging(c =>
+        {
+            var connectionString = config["LoggingStorageAccount"];
+            if (string.IsNullOrWhiteSpace(connectionString))
+                return;
 
-        //    var logName = $"azurefunctionapp.log";
-        //    var logger = new LoggerConfiguration()
-        //                        .WriteTo.Console()
-        //                        .WriteTo.AzureBlobStorage(connectionString,
-        //                                                  restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-        //                                                  storageFileName: "{yyyy}/{MM}/{dd}/" + logName,
-        //                                                  outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}")                  
-        //                        .CreateLogger();
+            var logName = $"azurefunctionapp.log";
+            var logger = new LoggerConfiguration()
+                                .WriteTo.Console()
+                                //.WriteTo.AzureBlobStorage(connectionString,
+                                //                          restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                                //                          storageFileName: "{yyyy}/{MM}/{dd}/" + logName,
+                                //                          outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}")
+                                .CreateLogger();
 
-        //    c.AddSerilog(logger, true);
-        //});
+            c.AddSerilog(logger, true);
+        });
     }
 }
