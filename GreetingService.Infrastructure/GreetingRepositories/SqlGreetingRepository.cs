@@ -14,6 +14,9 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
     {
         _greetingDbContext = greetingDbContext;
         _log = log;
+        var canConnect = _greetingDbContext.Database.CanConnect();
+        if (!canConnect)
+            _log.LogError("Can't connect to database.");
     }
 
     public async Task<bool> CreateAsync(Greeting g)
@@ -94,8 +97,9 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
 
     public async Task<IEnumerable<Greeting>> GetAsync()
     {
-        List<Greeting> greetings = await Task.Run(() => _greetingDbContext.Greetings.ToList());
-        return greetings;
+        var greetings = await Task.Run(() => from g in _greetingDbContext.Greetings select g);
+        var greetings2  = greetings.ToList();
+        return greetings2;
     }
 
     public async Task<bool> UpdateAsync(Greeting g)
@@ -113,8 +117,8 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
                 if (fromUser == null)
                     throw new UserDoesNotExistException(g.From);
 
-                await Task.Run(() => _greetingDbContext.Remove(greetingToRemove));
-                await _greetingDbContext.AddAsync<Greeting>(g);
+                await Task.Run(() => _greetingDbContext.Greetings.Remove(greetingToRemove));
+                await _greetingDbContext.Greetings.AddAsync(g);
                 await _greetingDbContext.SaveChangesAsync();
                 _log.LogInformation($"Successfully updated {g.Id}.");
                 return true;

@@ -24,6 +24,10 @@ public class SqlInvoiceService : IInvoiceService
         _config = config;
         _greetingRepository = grepo;
         _userService = us;
+
+        var canConnect = _dataBase.Database.CanConnect();
+        if (!canConnect)
+            _log.LogError("Can't connect to database.");
     }
 
     public async Task CreateOrUpdateInvoiceAsync(Invoice invoice)
@@ -86,7 +90,6 @@ public class SqlInvoiceService : IInvoiceService
         }
         foreach (var invoice in invoices)
             await CreateOrUpdateInvoiceAsync(invoice);
-        await _dataBase.SaveChangesAsync();
     }
 }
 

@@ -9,16 +9,16 @@ namespace GreetingService.API.Function
     public class InvoicesTrigger
     {
         private IInvoiceService _invoiceService;
-        private ILogger _log;
+        private ILogger<InvoicesTrigger> _log;
 
-        public InvoicesTrigger(ILogger log, IInvoiceService invoiceService)
+        public InvoicesTrigger(ILogger<InvoicesTrigger> log, IInvoiceService invoiceService)
         {
             _invoiceService = invoiceService;
             _log = log;
         }
 
         [FunctionName("InvoicesTrigger")]
-        public async Task Run([TimerTrigger("*/5 * * * * *", RunOnStartup = true)] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo myTimer)
         {
             try
             {
