@@ -57,14 +57,21 @@ public class SqlInvoiceService : IInvoiceService
     }
     public async Task ProcessGreetingsForInvoices()
     {
-        var greetings = from g in _dataBase.Greetings select g;
+        var greetings = from g in _dataBase.Greetings
+                        where g.InvoiceId == null
+                        select g;
         List<Greeting> greetingsList = greetings.ToList();
-        
-        var users = from u in _dataBase.Users select u;
+
+        var users = from u in _dataBase.Users
+                    select u;
         List<User> usersList = users.ToList();
-        
-        var invoicesList = new List<Invoice>();
-        
+
+        var invoices = from i in _dataBase.Invoices
+                       select i;
+        var invoicesList = invoices.ToList();   
+
+
+
         foreach (var greeting in greetingsList)
         {
             string userEmail = greeting.From;
@@ -72,7 +79,7 @@ public class SqlInvoiceService : IInvoiceService
             int year = greeting.Timestamp.Year;
 
             Invoice? invoice = invoicesList.FirstOrDefault(i => i.User.Email == userEmail
-                                                            && i.Month == month 
+                                                            && i.Month == month
                                                             && i.Year == year);
             if (invoice == null)
             {
@@ -92,8 +99,15 @@ public class SqlInvoiceService : IInvoiceService
                 invoice.Greetings.Add(greeting);
                 invoice.TotalCost += invoice.Cost;
             }
+            await CreateOrUpdateInvoiceAsync(invoice);
+            var invoiceId = (from i in _dataBase.Invoices
+                             where i.User.Email == userEmail && i.Month == month && i.Year == year
+                             select i.Id).FirstOrDefault();
+            greeting.InvoiceId = invoiceId;
 
         }
+        foreach (var greeting in greetingsList)
+            _dataBase.Greetings.Update(greeting);
         foreach (var invoice in invoicesList)
             await CreateOrUpdateInvoiceAsync(invoice);
     }

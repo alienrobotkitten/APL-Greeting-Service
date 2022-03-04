@@ -8,6 +8,7 @@ namespace GreetingService.API.Function
 {
     public class InvoicesTrigger
     {
+        private const string cronSchedule = "0 0 */12 * * *";
         private IInvoiceService _invoiceService;
         private ILogger<InvoicesTrigger> _log;
 
@@ -18,7 +19,7 @@ namespace GreetingService.API.Function
         }
 
         [FunctionName("InvoicesTrigger")]
-        public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo myTimer)
+        public async Task Run([TimerTrigger(cronSchedule, RunOnStartup = true)] TimerInfo myTimer)
         {
             try
             {
