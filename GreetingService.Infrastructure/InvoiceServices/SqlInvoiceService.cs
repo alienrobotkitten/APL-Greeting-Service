@@ -33,7 +33,7 @@ public class SqlInvoiceService : IInvoiceService
     public async Task CreateOrUpdateInvoiceAsync(Invoice invoice)
     {
         await Task.Run(() => _dataBase.Invoices.Update(invoice));
-        _log.LogInformation($"Invoice with id {invoice.Id} added to database.");
+        _log.LogInformation($"Invoice with id {invoice.Id} added to database or updated.");
         await _dataBase.SaveChangesAsync();
     }
 
@@ -60,6 +60,15 @@ public class SqlInvoiceService : IInvoiceService
         var greetings = from g in _dataBase.Greetings
                         where g.InvoiceId == null
                         select g;
+
+        //foreach (var greeting in greetings)
+        //{
+        //    greeting.InvoiceId = null;
+        //    _dataBase.Greetings.Update(greeting);
+        //}
+
+        //await _dataBase.SaveChangesAsync();
+
         List<Greeting> greetingsList = greetings.ToList();
 
         var users = from u in _dataBase.Users
@@ -68,9 +77,6 @@ public class SqlInvoiceService : IInvoiceService
 
         var invoices = from i in _dataBase.Invoices
                        select i;
-        var invoicesList = invoices.ToList();   
-
-
 
         foreach (var greeting in greetingsList)
         {
@@ -78,38 +84,34 @@ public class SqlInvoiceService : IInvoiceService
             int month = greeting.Timestamp.Month;
             int year = greeting.Timestamp.Year;
 
-            Invoice? invoice = invoicesList.FirstOrDefault(i => i.User.Email == userEmail
+            Invoice? invoice = invoices.FirstOrDefault(i => i.User.Email == userEmail
                                                             && i.Month == month
                                                             && i.Year == year);
             if (invoice == null)
             {
                 invoice = new Invoice();
                 invoice.User = usersList.FirstOrDefault(u => u.Email == userEmail);
-                invoice.Greetings = new List<Greeting>();
-                invoice.Greetings.Add(greeting);
                 invoice.Year = year;
                 invoice.Month = month;
                 invoice.Cost = 13.37F;
-                invoice.TotalCost = invoice.Cost;
+                invoice.TotalCost = 0;
                 invoice.Currency = "SEK";
-                invoicesList.Add(invoice);
             }
-            else
-            {
-                invoice.Greetings.Add(greeting);
-                invoice.TotalCost += invoice.Cost;
-            }
-            await CreateOrUpdateInvoiceAsync(invoice);
-            var invoiceId = (from i in _dataBase.Invoices
-                             where i.User.Email == userEmail && i.Month == month && i.Year == year
-                             select i.Id).FirstOrDefault();
-            greeting.InvoiceId = invoiceId;
 
-        }
-        foreach (var greeting in greetingsList)
-            _dataBase.Greetings.Update(greeting);
-        foreach (var invoice in invoicesList)
+            invoice.TotalCost += invoice.Cost;
             await CreateOrUpdateInvoiceAsync(invoice);
+
+            if (invoice.Id == null)
+            {
+                var invoiceId = (from i in _dataBase.Invoices
+                                 where i.User.Email == userEmail && i.Month == month && i.Year == year
+                                 select i.Id).FirstOrDefault();
+            }
+
+            greeting.InvoiceId = invoice.Id;
+            _dataBase.Greetings.Update(greeting);
+            await _dataBase.SaveChangesAsync();
+        }
     }
 }
 
