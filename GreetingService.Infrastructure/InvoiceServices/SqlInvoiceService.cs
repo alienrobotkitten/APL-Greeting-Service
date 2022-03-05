@@ -58,7 +58,7 @@ public class SqlInvoiceService : IInvoiceService
     public async Task ProcessGreetingsForInvoices()
     {
         var greetings = from g in _dataBase.Greetings
-                        //where g.InvoiceId == null
+                        where g.InvoiceId == null
                         select g;
         List<Greeting> greetingsList = greetings.ToList();
 
