@@ -8,9 +8,36 @@ var storageAccountName = '${substring(appName,0,10)}${uniqueString(resourceGroup
 var loggingStorageAccountName = '${substring(appName,0,7)}log${uniqueString(resourceGroup().id)}' 
 var hostingPlanName = '${appName}${uniqueString(resourceGroup().id)}'
 var appInsightsName = '${appName}${uniqueString(resourceGroup().id)}'
-var functionAppName = '${appName}'
+var functionAppName = appName
 var sqlServerName = '${appName}sqlserver'
 var sqlDbName = '${appName}sqldb'
+var servicebusNamespaceName = 'helena-sb-dev'
+
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
+  name: servicebusNamespaceName
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+
+  resource mainTopic 'topics@2021-06-01-preview' = {
+    name: 'main'
+
+    resource greetingCreateSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'greeting_create'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'NewGreeting'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
+  }
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: storageAccountName
@@ -77,7 +104,11 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
         }
         {
           name: 'GreetingDbConnectionString'
-          value: 'Server=tcp:${sqlServer.name}.database.windows.net,1433;Initial Catalog=${sqlDbName};Persist Security Info=False;User ID=${sqlAdminUser};Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+          value: 'Data Source=tcp:${reference(sqlServer.id).fullyQualifiedDomainName},1433;Initial Catalog=${sqlDbName};User Id=${sqlAdminUser};Password=\'${sqlAdminPassword}\';'
+        }
+        {
+          name: 'ServiceBusConnectionString'
+          value: listKeys('${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey', serviceBusNamespace.apiVersion).primaryConnectionString
         }
         {
           'name': 'FUNCTIONS_EXTENSION_VERSION'
@@ -137,3 +168,4 @@ resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
     }
   }
 }
+
