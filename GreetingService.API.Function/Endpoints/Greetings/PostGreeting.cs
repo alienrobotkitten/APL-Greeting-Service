@@ -18,14 +18,15 @@ namespace GreetingService.API.Function.Endpoints.Greetings
     public class PostGreeting
     {
         private readonly ILogger<PostGreeting> _logger;
-        private readonly IGreetingRepositoryAsync _database;
         private readonly IAuthHandlerAsync _authHandler;
+        private readonly IMessagingService _messagingService;
 
-        public PostGreeting(ILogger<PostGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+        public PostGreeting(ILogger<PostGreeting> log, IAuthHandlerAsync authHandler, IMessagingService messagingService)
         {
             _logger = log;
-            _database = database;
+
             _authHandler = authHandler;
+            _messagingService = messagingService;
         }
 
         [FunctionName("PostGreeting")]
@@ -43,12 +44,12 @@ namespace GreetingService.API.Function.Endpoints.Greetings
             string body = await req.ReadAsStringAsync();
             try
             {
+                
                 Greeting g = body.ToGreeting();
-                bool success = await _database.CreateAsync(g);
 
-                return success ?
-                    new OkObjectResult("Greeting was created.")
-                    : new ConflictObjectResult($"Greeting with guid {g.Id} already exists.");
+                await _messagingService.SendAsync<Greeting>(g,ServiceBusSubject.NewGreeting.ToString());
+
+                return new OkObjectResult("Greeting was queued.");
             }
             catch (Exception ex)
             {

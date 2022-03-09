@@ -23,7 +23,7 @@ public class Greeting
             _to = value;
         }
     }
-   
+
     private string _from;
     public string From
     {
@@ -48,6 +48,7 @@ public class Greeting
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <param name="message"></param>
+    [JsonConstructorAttribute]
     public Greeting(string from, string to, string message)
     {
         From = from;
@@ -93,7 +94,7 @@ public class Greeting
     /// <param name="message"></param>
     /// <param name="id"></param>
     /// <param name="timestamp"></param>
-    [JsonConstructorAttribute]
+
     public Greeting(string from, string to, string message, Guid id, DateTime timestamp)
     {
         Timestamp = timestamp;

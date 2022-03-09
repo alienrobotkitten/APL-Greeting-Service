@@ -6,9 +6,12 @@ using GreetingService.Infrastructure.InvoiceServices;
 using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Microsoft.Extensions.Configuration;
+using GreetingService.Infrastructure.MessagingServices;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 
@@ -24,11 +27,6 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddLogging();
 
-        builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
-        builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
-        builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
-        builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
-        
         builder.Services.AddDbContext<GreetingDbContext>(options =>
         {
             options.UseSqlServer(config["GreetingDbConnectionString"]);
@@ -36,7 +34,19 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddEndpointsApiExplorer();
 
+        builder.Services.AddAzureClients(builder =>
+        {
+            builder.AddServiceBusClient(config["ServiceBusConnectionString"]);
+        });
 
+        builder.Services.AddControllers();
+
+        builder.Services.AddScoped<IAuthHandlerAsync, BasicAuthHandlerAsync>();
+        builder.Services.AddScoped<IGreetingRepositoryAsync, SqlGreetingRepository>();
+        builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
+        builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
+        builder.Services.AddSingleton<IMessagingService, ServiceBusMessagingService>();
+        
         //Create a Serilog logger and register it as a logger
         //Get the Azure Storage Account connection string from our IConfiguration
         builder.Services.AddLogging(c =>
