@@ -1,5 +1,4 @@
 using GreetingService.Core.Entities;
-using GreetingService.Core.Exceptions;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,6 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Users;
@@ -20,11 +18,12 @@ public class UpdateUser
     private readonly ILogger<UpdateUser> _logger;
     private readonly IUserServiceAsync _userService;
     private readonly IAuthHandlerAsync _authHandler;
+    private IMessagingService _messagingService;
 
-    public UpdateUser(ILogger<UpdateUser> log, IUserServiceAsync userService, IAuthHandlerAsync authHandler)
+    public UpdateUser(ILogger<UpdateUser> log, IMessagingService messagingService, IAuthHandlerAsync authHandler)
     {
         _logger = log;
-        _userService = userService;
+        _messagingService = messagingService;
         _authHandler = authHandler;
     }
 
@@ -41,14 +40,9 @@ public class UpdateUser
         {
             string body = await req.ReadAsStringAsync();
             User user = body.ToUser();
-
-            await _userService.UpdateUserAsync(user); 
+            await _messagingService.SendAsync<User>(user, ServiceBusSubject.UpdateUser.ToString());
 
             return new OkObjectResult("User was updated.");
-        }
-        catch (UserDoesNotExistException ex)
-        {
-            return new NotFoundObjectResult(ex.Message);
         }
         catch (Exception ex)
         {

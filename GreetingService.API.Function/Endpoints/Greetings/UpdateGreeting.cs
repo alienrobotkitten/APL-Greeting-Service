@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Greetings;
@@ -19,14 +18,14 @@ namespace GreetingService.API.Function.Endpoints.Greetings;
 public class UpdateGreeting
 {
     private readonly ILogger<UpdateGreeting> _logger;
-    private readonly IGreetingRepositoryAsync _database;
     private readonly IAuthHandlerAsync _authHandler;
+    private IMessagingService _messagingService;
 
-    public UpdateGreeting(ILogger<UpdateGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+    public UpdateGreeting(ILogger<UpdateGreeting> log, IMessagingService messagingservice, IAuthHandlerAsync authHandler)
     {
         _logger = log;
-        _database = database;
         _authHandler = authHandler;
+        _messagingService = messagingservice;
     }
 
     [FunctionName("PutGreeting")]
@@ -44,16 +43,10 @@ public class UpdateGreeting
         try
         {
             Greeting g = body.ToGreeting();
-            bool success = await _database.UpdateAsync(g);
+            await _messagingService.SendAsync<Greeting>(g, ServiceBusSubject.UpdateGreeting.ToString());
 
-            return success ?
-                new OkObjectResult("Greeting was updated.")
-                : new StatusCodeResult(410);
-        }
-        catch (GreetingNotFoundException ex)
-        {
-            _logger.LogError(ex.ToString());
-            return new BadRequestObjectResult(ex.Message);
+            return new OkObjectResult("Greeting was updated.");
+                
         }
         catch (Exception ex)
         {

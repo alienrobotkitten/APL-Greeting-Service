@@ -9,7 +9,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace GreetingService.API.Function.Endpoints.Users
@@ -18,12 +17,12 @@ namespace GreetingService.API.Function.Endpoints.Users
     {
         private readonly ILogger<CreateUser> _logger;
         private readonly IAuthHandlerAsync _authHandler;
-        private readonly IUserServiceAsync _userService;
+        private readonly IMessagingService _messagingService;
 
-        public CreateUser(ILogger<CreateUser> log, IUserServiceAsync userService, IAuthHandlerAsync authHandler)
+        public CreateUser(ILogger<CreateUser> log, IMessagingService messagingService, IAuthHandlerAsync authHandler)
         {
             _logger = log;
-            _userService = userService;
+            _messagingService = messagingService;
             _authHandler = authHandler;
         }
 
@@ -37,19 +36,13 @@ namespace GreetingService.API.Function.Endpoints.Users
             //if (!await _authHandler.IsAuthorizedAsync(req))
             //    return new UnauthorizedResult();
 
-            User user;
-
             try
             {
                 string body = await req.ReadAsStringAsync();
-                user = body.ToUser();
-                await _userService.CreateUserAsync(user);
+                User user = body.ToUser();
+                await _messagingService.SendAsync<User>(user, ServiceBusSubject.NewUser.ToString());
 
                 return new OkObjectResult("User was added.");
-            }
-            catch  (UserAlreadyExistsException e)
-            {
-                return new ConflictObjectResult(e.Message);
             }
             catch (InvalidEmailException e)
             {

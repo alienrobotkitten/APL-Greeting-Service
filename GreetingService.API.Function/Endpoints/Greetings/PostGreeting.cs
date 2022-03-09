@@ -24,7 +24,6 @@ namespace GreetingService.API.Function.Endpoints.Greetings
         public PostGreeting(ILogger<PostGreeting> log, IAuthHandlerAsync authHandler, IMessagingService messagingService)
         {
             _logger = log;
-
             _authHandler = authHandler;
             _messagingService = messagingService;
         }
@@ -44,10 +43,10 @@ namespace GreetingService.API.Function.Endpoints.Greetings
             string body = await req.ReadAsStringAsync();
             try
             {
-                
+
                 Greeting g = body.ToGreeting();
 
-                await _messagingService.SendAsync<Greeting>(g,ServiceBusSubject.NewGreeting.ToString());
+                await _messagingService.SendAsync<Greeting>(g, ServiceBusSubject.NewGreeting.ToString());
 
                 return new OkObjectResult("Greeting was queued.");
             }

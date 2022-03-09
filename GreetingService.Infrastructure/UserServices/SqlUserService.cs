@@ -43,7 +43,8 @@ public class SqlUserService : IUserServiceAsync
         User? existingUser = await _db.Users.FindAsync(user.Email);
         
         if (existingUser != null)
-            throw new UserAlreadyExistsException(user.Email);
+            //throw new UserAlreadyExistsException(user.Email);
+            return false;
 
         await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();

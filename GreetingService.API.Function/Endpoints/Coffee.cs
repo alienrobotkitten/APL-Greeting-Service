@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Models;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace GreetingService.API.Function
+namespace GreetingService.API.Function.Endpoints
 {
     public class Coffee
     {

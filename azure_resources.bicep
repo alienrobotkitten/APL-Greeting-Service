@@ -36,6 +36,45 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview
         }
       }
     }
+    resource greetingUpdateSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'greeting_update'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'UpdateGreeting'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
+    resource userCreateSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'user_create'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'NewUser'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
+    resource userUpdateSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'user_update'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'UpdateUser'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
   }
 }
 

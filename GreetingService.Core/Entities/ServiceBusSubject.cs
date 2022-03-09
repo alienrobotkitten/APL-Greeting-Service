@@ -2,4 +2,7 @@
 public enum ServiceBusSubject
 {
     NewGreeting = 0,
+    UpdateGreeting = 1,
+    NewUser = 2,
+    UpdateUser = 3,
 }
