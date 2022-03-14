@@ -25,15 +25,17 @@ public class TeamsApprovalService : IApprovalService
     }
     public async Task BeginUserApprovalAsync(User user)
     {
+        _client = new HttpClient();
         // Please note that response body needs to be extracted and read 
         // as Connectors do not throw 429s
         string jsoncontent = 
             "{" +
             "\"@type\": \"MessageCard\"," +
             "\"@context\": \"https://schema.org/extensions\"," +
+            "\"summary\": \"summary\"," +
             "\"sections\": [" +
                 "{" +
-                    "\"title\": \"**Pending approval**\"," +
+                    "\"title\": \"**Pending approval for admin Helena Karlfeldt**\"," +
                     "\"activityImage\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1024px-User_font_awesome.svg.png?20160212005950\","+
 	    		    $"\"activityTitle\": \"Approve new user in GreetingService: {user.Email}\"," +
 	    		    $"\"activitySubtitle\": \"{user.FirstName} {user.LastName}\"," +

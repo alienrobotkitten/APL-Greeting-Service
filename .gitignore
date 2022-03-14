@@ -20,3 +20,4 @@
 appsettings.json
 local.settings.json
 *settings.json
+*.sql

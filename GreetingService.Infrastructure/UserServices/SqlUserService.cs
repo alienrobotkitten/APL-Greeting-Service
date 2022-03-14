@@ -41,7 +41,7 @@ public class SqlUserService : IUserServiceAsync
     public async Task<bool> CreateUserAsync(User user)
     {
         User? existingUser = await _db.Users.FindAsync(user.Email);
-        
+
         if (existingUser != null)
             //throw new UserAlreadyExistsException(user.Email);
             return false;
@@ -99,15 +99,37 @@ public class SqlUserService : IUserServiceAsync
 
     public async Task ApproveUserAsync(Guid approvalCode)
     {
-        User user = await _db.Users.FindAsync(approvalCode);
-        user.ApprovalStatus = UserStatus.Approved;
-        user.ApprovalStatusNote = "User was approved on " + DateTime.Now.ToString();
+        User? user = (from u in _db.Users
+                     where u.ApprovalCode == approvalCode
+                     select u)
+                    .FirstOrDefault();
+        if (user == null) return;
+
+        if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
+        {
+            user.ApprovalStatus = UserStatus.Approved;
+            user.ApprovalStatusNote = "User was approved on " + DateTime.Now.ToString();
+            _db.Users.Update(user);
+            _db.SaveChanges();
+            _logger.LogInformation($"User with email {user.Email} was approved.");
+        }
     }
 
     public async Task RejectUserAsync(Guid approvalCode)
     {
-        User user = await _db.Users.FindAsync(approvalCode);
-        user.ApprovalStatus = UserStatus.Rejected;
-        user.ApprovalStatusNote = "User was rejected on " + DateTime.Now.ToString();
+        User? user = (from u in _db.Users
+                     where u.ApprovalCode == approvalCode
+                     select u)
+                    .FirstOrDefault();
+        if (user == null) return;
+        
+        if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
+        {
+            user.ApprovalStatus = UserStatus.Rejected;
+            user.ApprovalStatusNote = "User was rejected on " + DateTime.Now.ToString();
+            _db.Users.Update(user);
+            _db.SaveChanges();
+            _logger.LogInformation($"User with email {user.Email} was rejected.");
+        }
     }
 }

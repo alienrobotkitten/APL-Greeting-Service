@@ -49,7 +49,7 @@ namespace GreetingService.API.Function.Endpoints.Users
 
                 await _messagingService.SendAsync<User>(user, ServiceBusSubject.UserApproval.ToString());
 
-                return new OkObjectResult("User was added.");
+                return new OkObjectResult("Request was sent.");
             }
             catch (InvalidEmailException e)
             {
