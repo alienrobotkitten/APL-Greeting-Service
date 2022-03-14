@@ -103,7 +103,12 @@ public class SqlUserService : IUserServiceAsync
                      where u.ApprovalCode == approvalCode
                      select u)
                     .FirstOrDefault();
-        if (user == null) return;
+        if (user == null)
+        {
+            _logger.LogWarning($"No valid user found for approvalcode {approvalCode}");
+            throw new Exception($"No valid user found for approvalcode {approvalCode}");
+            
+        }
 
         if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
         {
@@ -113,6 +118,11 @@ public class SqlUserService : IUserServiceAsync
             _db.SaveChanges();
             _logger.LogInformation($"User with email {user.Email} was approved.");
         }
+        else
+        {
+            _logger.LogWarning("User already processed or link expired.");
+            throw new Exception("User already processed or link expired.");
+        }
     }
 
     public async Task RejectUserAsync(Guid approvalCode)
@@ -121,7 +131,11 @@ public class SqlUserService : IUserServiceAsync
                      where u.ApprovalCode == approvalCode
                      select u)
                     .FirstOrDefault();
-        if (user == null) return;
+        if (user == null)
+        {
+            _logger.LogWarning($"No valid user found for approvalcode {approvalCode}");
+            return;
+        }
         
         if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
         {
@@ -130,6 +144,11 @@ public class SqlUserService : IUserServiceAsync
             _db.Users.Update(user);
             _db.SaveChanges();
             _logger.LogInformation($"User with email {user.Email} was rejected.");
+        }
+        else
+        {
+            _logger.LogWarning("User already processed or link expired.");
+            throw new Exception("User already processed or link expired.");
         }
     }
 }

@@ -36,9 +36,9 @@ namespace GreetingService.API.Function.Endpoints.Users
 
                 return new OkObjectResult("User was rejected.");
             }
-            catch (InvalidEmailException e)
+            catch (Exception e)
             {
-                return new BadRequestObjectResult(e.Message);
+                return new BadRequestResult();
             }
         }
     }

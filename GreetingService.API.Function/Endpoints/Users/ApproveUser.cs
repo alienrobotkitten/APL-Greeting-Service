@@ -34,11 +34,11 @@ namespace GreetingService.API.Function.Endpoints.Users
             {
                 await _userService.ApproveUserAsync(approvalCode);
 
-                return new OkObjectResult("User was added.");
+                return new OkObjectResult("User was approved.");
             }
-            catch (InvalidEmailException e)
+            catch (Exception e)
             {
-                return new BadRequestObjectResult(e.Message);
+                return new BadRequestResult();
             }
         }
     }
