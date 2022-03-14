@@ -47,7 +47,7 @@ namespace GreetingService.API.Function.Endpoints.Users
                 user.ApprovalStatusNote = "Waiting for approval by admin.";
                 user.ApprovalExpiry = DateTime.Now.AddDays(1);
 
-                await _messagingService.SendAsync<User>(user, ServiceBusSubject.NewUser.ToString());
+                await _messagingService.SendAsync<User>(user, ServiceBusSubject.UserApproval.ToString());
 
                 return new OkObjectResult("User was added.");
             }

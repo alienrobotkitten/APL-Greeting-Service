@@ -27,40 +27,42 @@ public class TeamsApprovalService : IApprovalService
     {
         // Please note that response body needs to be extracted and read 
         // as Connectors do not throw 429s
-        string jsoncontent = "{\"@type\": " +
-            "\"MessageCard\"," +
+        string jsoncontent = 
+            "{" +
+            "\"@type\": \"MessageCard\"," +
             "\"@context\": \"https://schema.org/extensions\"," +
-            "\"sections\": [{" +
-               "\"title\": \"**Pending approval**\"," +
-               "\"activityImage\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1024px-User_font_awesome.svg.png?20160212005950\","+
-	    		$"\"activityTitle\": \"Approve new user in GreetingService: {user.Email}\"," +
-	    		$"\"activitySubtitle\": \"{user.FirstName} {user.LastName}\"," +
-	    		"\"facts\": [" +"" +
-                    "{" +
-                    "\"name\": \"Expires on:\"," +
-                    $"\"value\": \"{user.ApprovalExpiry}\"" +
-                    "},"+
-				    "{"+
-                    "\"name\": \"Details:\"," +
-					"\"value\": \"Please approve or reject the new user for the GreetingService\""+
-                    "}"+
-			"]"+
-		"},"+
-		"{" +
-            "\"potentialAction\": ["+
-                "{"+
-                "\"@type\": \"HttpPOST\","+
-                    "\"name\": \"Approve\","+
-                    $"\"target\": \"{ApproveUserApiEndpoint}{user.ApprovalCode}\""+ // approval endpoint url
-                "},"+
-                "{"+
-                "\"@type\": \"HttpPOST\","+
-                    "\"name\": \"Reject\","+
-                    $"\"target\": \"{RejectUserApiEndpoint}{user.ApprovalCode}\""+ // rejection endpoint url
-        "       }" +
-        "		]" +
-        "		}" +
-        "	]" +
+            "\"sections\": [" +
+                "{" +
+                    "\"title\": \"**Pending approval**\"," +
+                    "\"activityImage\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1024px-User_font_awesome.svg.png?20160212005950\","+
+	    		    $"\"activityTitle\": \"Approve new user in GreetingService: {user.Email}\"," +
+	    		    $"\"activitySubtitle\": \"{user.FirstName} {user.LastName}\"," +
+	    		    "\"facts\": [" +"" +
+                        "{" +
+                            "\"name\": \"Expires on:\"," +
+                            $"\"value\": \"{user.ApprovalExpiry}\"" +
+                        "},"+
+				        "{"+
+                            "\"name\": \"Details:\"," +
+					        "\"value\": \"Please approve or reject the new user for the GreetingService\""+
+                        "}"+
+		    	    "]"+
+		        "},"+
+		        "{" +
+                    "\"potentialAction\": ["+
+                        "{"+
+                            "\"@type\": \"HttpPOST\","+
+                            "\"name\": \"Approve\","+
+                            $"\"target\": \"{ApproveUserApiEndpoint}{user.ApprovalCode}\""+ // approval endpoint url
+                        "},"+
+                        "{"+
+                            "\"@type\": \"HttpPOST\","+
+                            "\"name\": \"Reject\","+
+                            $"\"target\": \"{RejectUserApiEndpoint}{user.ApprovalCode}\""+ // rejection endpoint url
+                        "}" +
+                    "]" +
+                "}" +
+            "]" +
         "}";
         
         //try

@@ -10,20 +10,23 @@ namespace GreetingService.API.Function.Triggers;
 public class NewUserTrigger
 {
     private readonly IUserServiceAsync _database;
+    private readonly IApprovalService _approvalService;
     private readonly ILogger<NewUserTrigger> _logger;
 
-    public NewUserTrigger(ILogger<NewUserTrigger> log, IUserServiceAsync database)
+    public NewUserTrigger(ILogger<NewUserTrigger> log, IUserServiceAsync database, IApprovalService approvalService)
     {
         _logger = log;
         _database = database;
+        _approvalService = approvalService;
     }
 
     [FunctionName("NewUserTrigger")]
-    public async Task Run([ServiceBusTrigger("main", "user_create", Connection = "ServiceBusConnectionString")] string mySbMsg)
+    public async Task Run([ServiceBusTrigger("main", "user_approval", Connection = "ServiceBusConnectionString")] string mySbMsg)
     {
         _logger.LogInformation($"C# ServiceBus topic trigger function processed message: {mySbMsg}");
 
-        User g = mySbMsg.ToUser();
-        bool success = await _database.CreateUserAsync(g);
+        User u = mySbMsg.ToUser();
+        bool success = await _database.CreateUserAsync(u);
+        await _approvalService.BeginUserApprovalAsync(u);
     }
 }

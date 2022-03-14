@@ -6,5 +6,5 @@ public enum ServiceBusSubject
     NewUser = 2,
     UpdateUser = 3,
     GreetingAdded = 4,
-    ApprovedUser = 5,
+    UserApproval = 5,
 }
