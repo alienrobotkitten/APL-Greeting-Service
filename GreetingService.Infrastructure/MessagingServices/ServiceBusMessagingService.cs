@@ -23,15 +23,5 @@ public class ServiceBusMessagingService : IMessagingService
       
         ServiceBusSender sender = _serviceBusClient.CreateSender("main");
         await sender.SendMessageAsync(sbm);
-
-        //// create a receiver that we can use to receive the message
-        //ServiceBusReceiver receiver = client.CreateReceiver(queueName);
-
-        //// the received message is a different type as it contains some service set properties
-        //ServiceBusReceivedMessage receivedMessage = await receiver.ReceiveMessageAsync();
-
-        //// get the message body as a string
-        //string body = receivedMessage.Body.ToString();
-        //Console.WriteLine(body);
     }
 }

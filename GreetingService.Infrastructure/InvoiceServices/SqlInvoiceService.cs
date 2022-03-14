@@ -37,6 +37,44 @@ public class SqlInvoiceService : IInvoiceService
         await _dataBase.SaveChangesAsync();
     }
 
+    public async Task CreateOrUpdateInvoiceAsync(Greeting greeting)
+    {
+        string userEmail = greeting.From.ToLower();
+        int month = greeting.Timestamp.Month;
+        int year = greeting.Timestamp.Year;
+
+        User user = _dataBase.Users.FirstOrDefault(u => u.Email == userEmail);
+        Invoice? invoice = _dataBase.Invoices.FirstOrDefault(i => i.User.Email == userEmail
+                                                        && i.Month == month
+                                                        && i.Year == year);
+        if (invoice == null)
+        {
+            invoice = new Invoice();
+            invoice.User = user;
+            invoice.Year = year;
+            invoice.Month = month;
+            invoice.Cost = 13.37F;
+            invoice.TotalCost = 0;
+            invoice.Currency = "SEK";
+        }
+
+        invoice.TotalCost += invoice.Cost;
+        _dataBase.Invoices.Update(invoice);
+
+        if (invoice.Id == null)
+        {
+            var invoiceId = (from i in _dataBase.Invoices
+                             where i.User.Email == userEmail && i.Month == month && i.Year == year
+                             select i.Id).FirstOrDefault();
+        }
+
+        greeting.InvoiceId = invoice.Id;
+        _dataBase.Greetings.Update(greeting);
+        await Task.Run(() => _dataBase.Invoices.Update(invoice));
+        _log.LogInformation($"Invoice with id {greeting.Id} added to database or updated.");
+        await _dataBase.SaveChangesAsync();
+    }
+
     public async Task<Invoice> GetInvoiceAsync(int year, int month, string email)
     {
         Invoice invoice = await Task.Run(() => _dataBase.Invoices.FirstOrDefault(i => i.Year == year && i.Month == month && i.User.Email == email));

@@ -8,7 +8,7 @@ namespace GreetingService.API.Function.Triggers;
 
 public class InvoicesTrigger
 {
-    private const string cronSchedule = "0 0 */12 * * *";
+    private const string cronSchedule = "0 0 4 */1 * *";
     private IInvoiceService _invoiceService;
     private ILogger<InvoicesTrigger> _log;
 
