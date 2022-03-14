@@ -10,6 +10,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Threading.Tasks;
+using System;
 
 namespace GreetingService.API.Function.Endpoints.Users
 {
@@ -40,6 +41,12 @@ namespace GreetingService.API.Function.Endpoints.Users
             {
                 string body = await req.ReadAsStringAsync();
                 User user = body.ToUser();
+
+                user.ApprovalCode = Guid.NewGuid();
+                user.ApprovalStatus = UserStatus.Pending;
+                user.ApprovalStatusNote = "Waiting for approval by admin.";
+                user.ApprovalExpiry = DateTime.Now.AddDays(1);
+
                 await _messagingService.SendAsync<User>(user, ServiceBusSubject.NewUser.ToString());
 
                 return new OkObjectResult("User was added.");

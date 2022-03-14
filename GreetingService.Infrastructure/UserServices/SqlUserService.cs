@@ -96,4 +96,18 @@ public class SqlUserService : IUserServiceAsync
             throw new UserDoesNotExistException(email);
         }
     }
+
+    public async Task ApproveUserAsync(Guid approvalCode)
+    {
+        User user = await _db.Users.FindAsync(approvalCode);
+        user.ApprovalStatus = UserStatus.Approved;
+        user.ApprovalStatusNote = "User was approved on " + DateTime.Now.ToString();
+    }
+
+    public async Task RejectUserAsync(Guid approvalCode)
+    {
+        User user = await _db.Users.FindAsync(approvalCode);
+        user.ApprovalStatus = UserStatus.Rejected;
+        user.ApprovalStatusNote = "User was rejected on " + DateTime.Now.ToString();
+    }
 }

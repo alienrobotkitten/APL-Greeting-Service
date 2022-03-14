@@ -88,4 +88,14 @@ public class BlobUserService : IUserServiceAsync
     {
         throw new NotImplementedException();
     }
+
+    public Task ApproveUserAsync(Guid approvalCode)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RejectUserAsync(Guid approvalCode)
+    {
+        throw new NotImplementedException();
+    }
 }

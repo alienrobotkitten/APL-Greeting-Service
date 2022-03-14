@@ -9,4 +9,6 @@ public interface IUserServiceAsync
     public Task<User> GetUserAsync(string email);
     public Task<bool> UpdateUserAsync(User user);
     public Task<bool> DeleteUserAsync(string email);
+    public Task ApproveUserAsync(Guid approvalCode);
+    public Task RejectUserAsync(Guid approvalCode);
 }

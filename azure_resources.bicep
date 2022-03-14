@@ -88,6 +88,19 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview
         }
       }
     }
+    resource userApprovalSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'user_approval'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'ApproveUser'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
   }
 }
 
@@ -178,7 +191,11 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'FileRepositoryFilePath'
           value: '/home/site/wwwroot/greeting.json'
         }
-        // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
+        {
+          name: 'IncomingWebhookUrl'
+          value: 'https://hennesandmauritz.webhook.office.com/webhookb2/224bce5b-9e29-4fb1-a0bc-b053189e0953@30f52344-4663-4c2e-bab3-61bf24ebbed8/IncomingWebhook/7ef57860f8a04531a32308a0b1bfaaa4/90960f29-25a6-4b09-b627-5e1667146073'
+        }
+         // WEBSITE_CONTENTSHARE will also be auto-generated - https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentshare
         // WEBSITE_RUN_FROM_PACKAGE will be set to 1 by func azure functionapp publish
       ]
     }

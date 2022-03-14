@@ -20,7 +20,7 @@ namespace GreetingService.API.Function.Triggers
             _logger = log;
         }
 
-        [FunctionName("Function1")]
+        [FunctionName("SbComputeInvoiceForGreeting")]
         public async Task RunAsync([ServiceBusTrigger("main", "greeting_compute_billing", Connection = "ServiceBusConnectionString")]string mySbMsg)
         {
             _logger.LogInformation($"C# ServiceBus topic trigger function processed message: {mySbMsg}");

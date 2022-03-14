@@ -46,6 +46,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddScoped<IInvoiceService, SqlInvoiceService>();
         builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
         builder.Services.AddSingleton<IMessagingService, ServiceBusMessagingService>();
+        builder.Services.AddScoped<IApprovalService, TeamsApprovalService>();
         
         //Create a Serilog logger and register it as a logger
         //Get the Azure Storage Account connection string from our IConfiguration
