@@ -4,6 +4,7 @@ using GreetingService.Core.Exceptions;
 using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace GreetingService.Infrastructure.UserServices;
 
@@ -46,6 +47,13 @@ public class SqlUserService : IUserServiceAsync
             //throw new UserAlreadyExistsException(user.Email);
             return false;
 
+        user.Created = DateTime.Now;
+        user.Modified = DateTime.Now;
+        user.ApprovalCode = RSACryptoServiceProvider.Create(42).ToString();
+        user.ApprovalStatus = UserStatus.Pending;
+        user.ApprovalStatusNote = "Waiting for approval by admin.";
+        user.ApprovalExpiry = DateTime.Now.AddDays(1);
+
         await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();
         return true;
@@ -68,6 +76,7 @@ public class SqlUserService : IUserServiceAsync
 
         if (user != null)
         {
+            user.Modified = DateTime.Now;
             await Task.Run(() => _db.Users.Update(updatedUser));
             await _db.SaveChangesAsync();
             return true;
@@ -97,7 +106,7 @@ public class SqlUserService : IUserServiceAsync
         }
     }
 
-    public async Task ApproveUserAsync(Guid approvalCode)
+    public async Task ApproveUserAsync(string approvalCode)
     {
         User? user = (from u in _db.Users
                      where u.ApprovalCode == approvalCode
@@ -110,10 +119,16 @@ public class SqlUserService : IUserServiceAsync
             
         }
 
+        if (user.ApprovalStatus == UserStatus.Approved)
+        {
+            return;
+        }
+
         if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
         {
             user.ApprovalStatus = UserStatus.Approved;
             user.ApprovalStatusNote = "User was approved on " + DateTime.Now.ToString();
+            user.Modified = DateTime.Now;
             _db.Users.Update(user);
             _db.SaveChanges();
             _logger.LogInformation($"User with email {user.Email} was approved.");
@@ -125,7 +140,7 @@ public class SqlUserService : IUserServiceAsync
         }
     }
 
-    public async Task RejectUserAsync(Guid approvalCode)
+    public async Task RejectUserAsync(string approvalCode)
     {
         User? user = (from u in _db.Users
                      where u.ApprovalCode == approvalCode
@@ -137,10 +152,16 @@ public class SqlUserService : IUserServiceAsync
             return;
         }
         
+        if (user.ApprovalStatus == UserStatus.Rejected)
+        {
+            return;
+        }
+
         if (user.ApprovalStatus == UserStatus.Pending && DateTime.Now < user.ApprovalExpiry)
         {
             user.ApprovalStatus = UserStatus.Rejected;
             user.ApprovalStatusNote = "User was rejected on " + DateTime.Now.ToString();
+            user.Modified = DateTime.Now;
             _db.Users.Update(user);
             _db.SaveChanges();
             _logger.LogInformation($"User with email {user.Email} was rejected.");

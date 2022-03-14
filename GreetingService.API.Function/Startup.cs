@@ -3,15 +3,13 @@ using GreetingService.Core.Interfaces;
 using GreetingService.Infrastructure;
 using GreetingService.Infrastructure.GreetingRepositories;
 using GreetingService.Infrastructure.InvoiceServices;
+using GreetingService.Infrastructure.MessagingServices;
 using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using Microsoft.Extensions.Configuration;
-using GreetingService.Infrastructure.MessagingServices;
 
 [assembly: FunctionsStartup(typeof(GreetingService.API.Function.Startup))]
 

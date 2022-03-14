@@ -24,7 +24,7 @@ public class User
     public DateTime Modified { get; set; }
     public UserStatus ApprovalStatus { get; set; }
     public string ApprovalStatusNote { get; set; }
-    public Guid ApprovalCode { get; set; }
+    public string ApprovalCode { get; set; }
     public DateTime ApprovalExpiry { get; set; }
 
     public User()

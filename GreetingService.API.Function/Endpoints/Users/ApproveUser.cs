@@ -26,7 +26,7 @@ namespace GreetingService.API.Function.Endpoints.Users
         [FunctionName("ApproveUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/approve/{approvalCode}")] HttpRequest req, Guid approvalCode)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/approve/{approvalCode}")] HttpRequest req, string approvalCode)
         {
             _logger.LogInformation("C# HTTP trigger function processed an approval request.");
 

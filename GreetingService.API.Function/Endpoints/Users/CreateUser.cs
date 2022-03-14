@@ -41,15 +41,9 @@ namespace GreetingService.API.Function.Endpoints.Users
             {
                 string body = await req.ReadAsStringAsync();
                 User user = body.ToUser();
-
-                user.ApprovalCode = Guid.NewGuid();
-                user.ApprovalStatus = UserStatus.Pending;
-                user.ApprovalStatusNote = "Waiting for approval by admin.";
-                user.ApprovalExpiry = DateTime.Now.AddDays(1);
-
                 await _messagingService.SendAsync<User>(user, ServiceBusSubject.UserApproval.ToString());
 
-                return new OkObjectResult("Request was sent.");
+                return new AcceptedResult();
             }
             catch (InvalidEmailException e)
             {

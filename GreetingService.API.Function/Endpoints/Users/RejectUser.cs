@@ -26,7 +26,7 @@ namespace GreetingService.API.Function.Endpoints.Users
         [FunctionName("RejectUser")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "Users" })]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/reject/{approvalCode}")] HttpRequest req, Guid approvalCode)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "user/reject/{approvalCode}")] HttpRequest req, string approvalCode)
         {
             _logger.LogInformation("C# HTTP trigger function processed a rejection request.");
 

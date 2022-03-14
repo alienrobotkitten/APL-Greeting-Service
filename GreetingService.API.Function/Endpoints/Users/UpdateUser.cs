@@ -16,7 +16,6 @@ namespace GreetingService.API.Function.Endpoints.Users;
 public class UpdateUser
 {
     private readonly ILogger<UpdateUser> _logger;
-    private readonly IUserServiceAsync _userService;
     private readonly IAuthHandlerAsync _authHandler;
     private IMessagingService _messagingService;
 
