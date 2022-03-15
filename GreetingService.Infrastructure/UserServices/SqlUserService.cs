@@ -5,6 +5,7 @@ using GreetingService.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
+using GreetingService.Core;
 
 namespace GreetingService.Infrastructure.UserServices;
 
@@ -49,7 +50,7 @@ public class SqlUserService : IUserServiceAsync
 
         user.Created = DateTime.Now;
         user.Modified = DateTime.Now;
-        user.ApprovalCode = RSACryptoServiceProvider.Create(42).ToString();
+        user.ApprovalCode = ApprovalCodeGenerator.GetApprovalCode();
         user.ApprovalStatus = UserStatus.Pending;
         user.ApprovalStatusNote = "Waiting for approval by admin.";
         user.ApprovalExpiry = DateTime.Now.AddDays(1);

@@ -1,7 +1,7 @@
 ﻿namespace GreetingService.Core.Entities;
 public enum UserStatus
 {
-    Rejected = 0,
-    Pending = 1,
-    Approved = 2,
+    Pending = 102,  // http status Processing
+    Rejected = 406, // http status Not acceptable
+    Approved = 202, // http status Accepted
 }
