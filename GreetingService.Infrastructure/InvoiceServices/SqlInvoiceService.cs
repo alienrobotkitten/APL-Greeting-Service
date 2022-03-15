@@ -118,7 +118,7 @@ public class SqlInvoiceService : IInvoiceService
 
         foreach (var greeting in greetingsList)
         {
-            string userEmail = greeting.From.ToLower();
+            string userEmail = greeting.From.ToLower().Trim();
             int month = greeting.Timestamp.Month;
             int year = greeting.Timestamp.Year;
 

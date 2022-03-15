@@ -1,21 +1,26 @@
 ﻿using GreetingService.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace GreetingService.Infrastructure;
 public class GreetingDbContext : DbContext
 {
+    private readonly IConfiguration _config;
+
     public DbSet<Greeting> Greetings { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-    public GreetingDbContext()
+    public GreetingDbContext(IConfiguration config)
     {
+        _config = config;
     }
     public GreetingDbContext(DbContextOptions options) : base(options)
     {
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("GreetingDbConnectionString"));
+        //optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("GreetingDbConnectionString"));
+        optionsBuilder.UseSqlServer(_config["GreetingDbConnectionString"]);
     }
 
     /// <summary>

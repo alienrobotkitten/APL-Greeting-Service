@@ -8,6 +8,7 @@ using GreetingService.Infrastructure.UserServices;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -17,6 +18,14 @@ namespace GreetingService.API.Function;
 
 public class Startup : FunctionsStartup
 {
+    public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+    {
+        base.ConfigureAppConfiguration(builder); // is this necessary?
+        var keyVaultName = "helenatestdevkv"; // should be stored in environment variable, but it doesn't work for me
+        string vaultUri = $"https://{keyVaultName}.vault.azure.net/";
+        builder.ConfigurationBuilder.AddAzureKeyVault(vaultUri); //vaultUri); , new DefaultAzureCredential());
+    }
+
     public override void Configure(IFunctionsHostBuilder builder)
     {
         var config = builder.GetContext().Configuration;
@@ -45,7 +54,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddScoped<IUserServiceAsync, SqlUserService>();
         builder.Services.AddSingleton<IMessagingService, ServiceBusMessagingService>();
         builder.Services.AddScoped<IApprovalService, TeamsApprovalService>();
-        
+
         //Create a Serilog logger and register it as a logger
         //Get the Azure Storage Account connection string from our IConfiguration
         builder.Services.AddLogging(c =>
