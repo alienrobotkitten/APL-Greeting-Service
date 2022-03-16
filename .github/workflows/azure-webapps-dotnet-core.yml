@@ -86,7 +86,7 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az group create -l westeurope -n helena-cicd-dev
-            az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=${{ env.AZURE_WEBAPP_NAME }} sqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
+            az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=${{ env.AZURE_WEBAPP_NAME }} sqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} webHookUrl=${{ secrets.WEB_HOOK_URL }}
 
   deploy:
     runs-on: ubuntu-latest

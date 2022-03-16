@@ -20,10 +20,8 @@ public class Startup : FunctionsStartup
 {
     public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
     {
-        base.ConfigureAppConfiguration(builder); // is this necessary?
-        var keyVaultName = "helenatestdevkv"; // should be stored in environment variable, but it doesn't work for me
-        string vaultUri = $"https://{keyVaultName}.vault.azure.net/";
-        builder.ConfigurationBuilder.AddAzureKeyVault(vaultUri); //vaultUri); , new DefaultAzureCredential());
+        var vaultUri = System.Environment.GetEnvironmentVariable("KeyVaultUri");
+        builder.ConfigurationBuilder.AddAzureKeyVault(vaultUri);
     }
 
     public override void Configure(IFunctionsHostBuilder builder)
@@ -36,14 +34,14 @@ public class Startup : FunctionsStartup
 
         builder.Services.AddDbContext<GreetingDbContext>(options =>
         {
-            options.UseSqlServer(config["GreetingDbConnectionString"]);
+            options.UseSqlServer(System.Environment.GetEnvironmentVariable("GreetingDbConnectionString"));
         });
 
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddAzureClients(builder =>
         {
-            builder.AddServiceBusClient(config["ServiceBusConnectionString"]);
+            builder.AddServiceBusClient(config["ServiceBusConnectionString1"]);
         });
 
         builder.Services.AddControllers();

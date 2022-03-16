@@ -9,7 +9,7 @@ namespace GreetingService.Core.Entities;
 public class Invoice
 {
     public int? Id { get; set; }
-    public User? User { get; set; }
+    public User User { get; set; }
     public List<Greeting>? Greetings { get; set; }
     public int? Year { get; set; }
     public int? Month { get; set; }

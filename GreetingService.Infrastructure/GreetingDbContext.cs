@@ -10,9 +10,9 @@ public class GreetingDbContext : DbContext
     public DbSet<Greeting> Greetings { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-    public GreetingDbContext(IConfiguration config)
+
+    public GreetingDbContext()
     {
-        _config = config;
     }
     public GreetingDbContext(DbContextOptions options) : base(options)
     {
@@ -20,7 +20,7 @@ public class GreetingDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         //optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("GreetingDbConnectionString"));
-        optionsBuilder.UseSqlServer(_config["GreetingDbConnectionString"]);
+        optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("GreetingDbConnectionString"));
     }
 
     /// <summary>
