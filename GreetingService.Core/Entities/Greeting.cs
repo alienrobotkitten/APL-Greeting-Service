@@ -1,15 +1,20 @@
+using System.ComponentModel.DataAnnotations;
 using GreetingService.Core.Extensions;
 using GreetingService.Core.Exceptions;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace GreetingService.Core.Entities;
 
 public class Greeting
 {
+    public int InvoiceId { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.Now;
     public string Message { get; set; }
+    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public int? InvoiceId { get; set; }
 
     private string _to;
     public string To

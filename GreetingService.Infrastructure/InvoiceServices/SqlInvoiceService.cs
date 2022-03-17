@@ -59,19 +59,9 @@ public class SqlInvoiceService : IInvoiceService
         }
 
         invoice.TotalCost += invoice.Cost;
-        _dataBase.Invoices.Update(invoice);
 
-        if (invoice.Id == null)
-        {
-            var invoiceId = (from i in _dataBase.Invoices
-                             where i.User.Email == userEmail && i.Month == month && i.Year == year
-                             select i.Id).FirstOrDefault();
-        }
-
-        greeting.InvoiceId = invoice.Id;
-        _dataBase.Greetings.Update(greeting);
         await Task.Run(() => _dataBase.Invoices.Update(invoice));
-        _log.LogInformation($"Invoice with id {greeting.Id} added to database or updated.");
+        _log.LogInformation($"Invoice with id {invoice.Id} added to database or updated.");
         await _dataBase.SaveChangesAsync();
     }
 
@@ -139,17 +129,29 @@ public class SqlInvoiceService : IInvoiceService
             invoice.TotalCost += invoice.Cost;
             await CreateOrUpdateInvoiceAsync(invoice);
 
-            if (invoice.Id == null)
-            {
-                var invoiceId = (from i in _dataBase.Invoices
-                                 where i.User.Email == userEmail && i.Month == month && i.Year == year
-                                 select i.Id).FirstOrDefault();
-            }
-
-            greeting.InvoiceId = invoice.Id;
-            _dataBase.Greetings.Update(greeting);
             await _dataBase.SaveChangesAsync();
         }
+    }
+
+    public async Task UpdateInvoiceOnGreetingDeletion(int invoiceId)
+    {
+        Invoice invoice = (from i in _dataBase.Invoices 
+                            where i.Id == invoiceId 
+                            select i)
+                            .FirstOrDefault();
+        
+        invoice.TotalCost -= invoice.Cost;
+        
+        if (invoice.TotalCost < invoice.Cost)
+        {
+            _dataBase.Remove(invoice);
+        }
+        else
+        {
+            _dataBase.Update(invoice);
+        }
+
+        await _dataBase.SaveChangesAsync();
     }
 }
 

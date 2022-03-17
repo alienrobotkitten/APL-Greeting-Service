@@ -7,4 +7,7 @@ public enum ServiceBusSubject
     UpdateUser = 3,
     GreetingAdded = 4,
     UserApproval = 5,
+    DeleteGreeting = 6,
+    GreetingDeleted = 7,
+
 }

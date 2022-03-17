@@ -9,19 +9,20 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using GreetingService.Core.Entities;
 
 namespace GreetingService.API.Function.Endpoints.Greetings;
 
 public class DeleteGreeting
 {
     private readonly ILogger<DeleteGreeting> _logger;
-    private readonly IGreetingRepositoryAsync _database;
+    private readonly IMessagingService _messagingService;
     private readonly IAuthHandlerAsync _authHandler;
 
-    public DeleteGreeting(ILogger<DeleteGreeting> log, IGreetingRepositoryAsync database, IAuthHandlerAsync authHandler)
+    public DeleteGreeting(ILogger<DeleteGreeting> log, IMessagingService messagingService, IAuthHandlerAsync authHandler)
     {
         _logger = log;
-        _database = database;
+        _messagingService = messagingService;
         _authHandler = authHandler;
     }
 
@@ -39,10 +40,9 @@ public class DeleteGreeting
 
         try
         {
-            Guid id = Guid.Parse(idstring);
-            bool success = await _database.DeleteAsync(id);
-            
-            return new OkObjectResult($"Greeting with id {id} was deleted.");
+            await _messagingService.SendAsync<string>(idstring, ServiceBusSubject.DeleteGreeting.ToString());
+
+            return new OkObjectResult($"Greeting with id {idstring} was queued for deletion.");
         }
         catch (Exception ex)
         {
