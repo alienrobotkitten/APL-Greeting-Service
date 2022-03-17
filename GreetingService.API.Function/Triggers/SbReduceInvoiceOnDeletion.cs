@@ -21,7 +21,7 @@ namespace GreetingService.API.Function.Triggers
         }
 
         [FunctionName("SbReduceInvoiceOnDeletion")]
-        public async Task RunAsync([ServiceBusTrigger("main", "greeting_deleted", Connection = "ServiceBusConnectionString")]string mySbMsg)
+        public async Task RunAsync([ServiceBusTrigger("main", "invoice_reduce_billing", Connection = "ServiceBusConnectionString")]string mySbMsg)
         {
             _logger.LogInformation($"C# ServiceBus topic trigger function processed message: {mySbMsg}");
             
