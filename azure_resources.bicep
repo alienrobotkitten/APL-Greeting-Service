@@ -55,52 +55,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
         }
         tenantId: tenantId
       }
-      {
-        objectId: 'ab48ec8a-903a-4b52-b8e2-96b922be65c1'
-        permissions: {
-          keys: [
-            'get'
-            'list'
-            'update'
-            'create'
-            'import'
-            'delete'
-            'recover'
-            'backup'
-            'restore'
-            'getrotationpolicy'
-            'setrotationpolicy'
-            'rotate'
-          ]
-          secrets: [
-            'get'
-            'list'
-            'set'
-            'delete'
-            'recover'
-            'backup'
-            'restore'
-          ]
-          certificates: [
-            'get'
-            'list'
-            'update'
-            'create'
-            'import'
-            'delete'
-            'recover'
-            'backup'
-            'restore'
-            'managecontacts'
-            'manageissuers'
-            'getissuers'
-            'listissuers'
-            'setissuers'
-            'deleteissuers'
-          ]
-        }
-        tenantId: tenantId
-      }
     ]
     sku: {
       family: 'A'
@@ -220,6 +174,32 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview
         properties: {
           correlationFilter: {
             label: 'UserApproval'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
+    resource deleteGreetingSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'greeting_delete'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'DeleteGreeting'
+          }
+          filterType: 'CorrelationFilter'
+        }
+      }
+    }
+    resource reduceBillingSubscription 'subscriptions@2021-06-01-preview' = {
+      name: 'invoice_reduce_billing'
+
+      resource rule 'rules@2021-06-01-preview' = {
+        name: 'subject'
+        properties: {
+          correlationFilter: {
+            label: 'GreetingDeleted'
           }
           filterType: 'CorrelationFilter'
         }
