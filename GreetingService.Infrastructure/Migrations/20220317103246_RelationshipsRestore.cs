@@ -8,9 +8,9 @@ namespace GreetingService.Infrastructure.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Greetings_Invoices_InvoiceId",
-                table: "Greetings");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Greetings_Invoices_InvoiceId",
+            //    table: "Greetings");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Year",
