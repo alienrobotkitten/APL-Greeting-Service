@@ -83,6 +83,18 @@ public class SqlInvoiceService : IInvoiceService
                                     );
         return invoices;
     }
+    public async Task<IEnumerable<Invoice>> GetInvoicesAsync(string email)
+    {
+        email = email.Trim().ToLower();
+        IEnumerable<Invoice> invoices = await Task.Run(() =>
+                                    (from i in _dataBase.Invoices
+                                     where i.User.Email == email
+                                     select i)
+                                    .ToList<Invoice>()
+                                    );
+        return invoices;
+    }
+
     public async Task ProcessGreetingsForInvoices()
     {
         var greetings = from g in _dataBase.Greetings

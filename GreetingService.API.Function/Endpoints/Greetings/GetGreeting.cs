@@ -32,7 +32,7 @@ namespace GreetingService.API.Function.Endpoints.Greetings
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IEnumerable<Greeting>), Description = "The OK response")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Description = "Id is not valid guid")]
         [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.NotFound, Description = "Greeting not found")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{from}/{to}/{idstring}")] HttpRequest req, string from, string to, string idstring)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "greeting/{idstring}")] HttpRequest req, string idstring)
         {
             _logger.LogInformation("C# HTTP trigger function processed a GET by ID request.");
 

@@ -21,6 +21,9 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
 
     public async Task<bool> CreateAsync(Greeting g)
     {
+        g.To = g.To.Trim().ToLower();
+        g.From = g.From.Trim().ToLower();
+
         try
         {
             User toUser = await _greetingDbContext.Users.FindAsync(g.To);
@@ -97,13 +100,14 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
 
     public async Task<IEnumerable<Greeting>> GetAsync()
     {
-        var greetings = await Task.Run(() => from g in _greetingDbContext.Greetings select g);
-        var greetings2  = greetings.ToList();
-        return greetings2;
+        var greetings = await Task.Run(() => _greetingDbContext.Greetings.ToList<Greeting>());
+        return greetings;
     }
 
     public async Task<bool> UpdateAsync(Greeting g)
     {
+        g.To = g.To.Trim().ToLower();
+        g.From = g.From.Trim().ToLower();
         try
         {
             Greeting greetingToRemove = await _greetingDbContext.Greetings.FindAsync(g.Id);
@@ -116,6 +120,9 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
                 User fromUser = await _greetingDbContext.Users.FindAsync(g.From);
                 if (fromUser == null)
                     throw new UserDoesNotExistException(g.From);
+
+                if (greetingToRemove.InvoiceId != g.InvoiceId)
+                    throw new Exception("Invoice id doesn't match. Update will not be performed.");
 
                 await Task.Run(() => _greetingDbContext.Greetings.Remove(greetingToRemove));
                 await _greetingDbContext.Greetings.AddAsync(g);
@@ -131,38 +138,44 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
         catch (Exception ex)
         {
             _log.LogError(ex.ToString());
-            throw;
+            return false;
         }
     }
 
-    public async Task<IEnumerable<Greeting>> GetAsync(string? from = null, string? to = null)
+    public async Task<IEnumerable<Greeting>> GetAsync(string? fromUser = null, string? toUser = null)
     {
         List<Greeting> greetings;
 
-        if (from != null || to != null)
+        if (toUser != null)
+            toUser = toUser.Trim().ToLower();
+        
+        if (fromUser != null)
+            fromUser.Trim().ToLower();
+
+        if (fromUser != null && toUser != null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.To == to && g.From == @from
+                            where g.To == toUser && g.From == fromUser
                             select g
                         );
             greetings = query.ToList();
 
         }
-        else if (from != null || to == null)
+        else if (fromUser != null && toUser == null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.From == @from
+                            where g.From == fromUser
                             select g
                         );
             greetings = query.ToList();
         }
-        else if (from == null || to != null)
+        else if (fromUser == null && toUser != null)
         {
             var query = await Task.Run(() =>
                             from g in _greetingDbContext.Greetings
-                            where g.To == to
+                            where g.To == toUser
                             select g
                         );
             greetings = query.ToList();

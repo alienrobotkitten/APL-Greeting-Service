@@ -14,6 +14,7 @@ var sqlServerName = '${appName}sqlserver'
 var sqlDbName = '${appName}sqldb'
 var keyVaultName = 'helenatestdevkv'
 var servicebusNamespaceName = 'helena-sb-dev'
+var cosmosDbName = 'helena-cosmosdb-dev'
 var tenantId = '9583541d-47a0-4deb-9e14-541050ac8bc1'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
@@ -87,6 +88,13 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     name: 'IncomingWebhookUrl'
     properties: {
       value: webHookUrl
+    }
+  }
+
+  resource cosmosDbUriSecret 'secrets@2021-11-01-preview' = {
+    name: 'CosmosDbConnectionString'
+    properties: {
+      value: 'AccountEndpoint=https://${cosmosDbName}.documents.azure.com:443/;AccountKey=FDabmGqArzXlwlmRf5qw1ZESiJbUVsRwIrxhqe9dOANuAKtBmThoopN5a8rBNMm77OdL1FI2CB3I7gmYdwsjPA==;'
     }
   }
 }

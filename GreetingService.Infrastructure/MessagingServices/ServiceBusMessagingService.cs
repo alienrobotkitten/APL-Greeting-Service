@@ -12,8 +12,8 @@ public class ServiceBusMessagingService : IMessagingService
     private ServiceBusClient _serviceBusClient { get; set; }
     public ServiceBusMessagingService(IConfiguration config, ServiceBusClient serviceBusClient)
     {
-        _serviceBusClient = serviceBusClient;
         _config = config;
+        _serviceBusClient = new(config["ServiceBusConnectionString"]);
     }
     public async Task SendAsync<T>(T message, string subject)
     {

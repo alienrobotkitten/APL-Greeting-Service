@@ -37,7 +37,10 @@ namespace GreetingService.API.Function.Endpoints.Greetings
             if (!await _authHandler.IsAuthorizedAsync(req))
                 return new UnauthorizedResult();
 
-            var g = await _database.GetAsync();
+            string fromUser = req.Query["from"];    
+            string toUser = req.Query["to"];
+     
+            var g = await _database.GetAsync(fromUser,toUser);
 
             return new OkObjectResult(g);
         }
