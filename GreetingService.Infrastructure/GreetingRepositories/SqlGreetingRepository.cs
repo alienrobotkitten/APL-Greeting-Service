@@ -150,7 +150,7 @@ public class SqlGreetingRepository : IGreetingRepositoryAsync
             toUser = toUser.Trim().ToLower();
         
         if (fromUser != null)
-            fromUser.Trim().ToLower();
+            fromUser = fromUser.Trim().ToLower();
 
         if (fromUser != null && toUser != null)
         {

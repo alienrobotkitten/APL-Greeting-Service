@@ -64,33 +64,34 @@ jobs:
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
+          retention-days: 7
 
-  deploy_bicep:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  # deploy_bicep:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   environment:
+  #     name: 'Development'
+  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: 'Login via Azure CLI'
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
           
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.30.0
-          inlineScript: |
-            az group create -l westeurope -n helena-cicd-dev
-            az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=${{ env.AZURE_WEBAPP_NAME }} sqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} webHookUrl=${{ secrets.WEB_HOOK_URL }}
+  #     - name: Azure CLI script
+  #       uses: azure/CLI@v1
+  #       with:
+  #         azcliversion: 2.30.0
+  #         inlineScript: |
+  #           az group create -l westeurope -n helena-cicd-dev
+  #           az deployment group create --resource-group helena-cicd-dev --template-file ./azure_resources.bicep --parameters appName=${{ env.AZURE_WEBAPP_NAME }} sqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }} webHookUrl=${{ secrets.WEB_HOOK_URL }}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: deploy_bicep
+    needs: jobs # was: deploy_bicep
     environment:
       name: 'Development'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}

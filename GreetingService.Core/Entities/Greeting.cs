@@ -4,6 +4,7 @@ using GreetingService.Core.Exceptions;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 
 namespace GreetingService.Core.Entities;
@@ -14,6 +15,7 @@ public class Greeting
     public DateTime Timestamp { get; set; } = DateTime.Now;
     public string Message { get; set; }
     [Key]
+    [JsonProperty(PropertyName = "id")]
     public Guid Id { get; set; } = Guid.NewGuid();
 
     private string _to;
@@ -53,7 +55,7 @@ public class Greeting
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <param name="message"></param>
-    [JsonConstructorAttribute]
+    [System.Text.Json.Serialization.JsonConstructorAttribute]
     public Greeting(string from, string to, string message)
     {
         From = from;
