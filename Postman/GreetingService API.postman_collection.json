@@ -1,0 +1,915 @@
+{
+	"info": {
+		"_postman_id": "9e15a28f-2caf-4e05-bfd2-a43b89ea9ac7",
+		"name": "GreetingService API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Webhook",
+			"item": [
+				{
+					"name": "https://helenatestdev.azurewebsites.net/api/user/approve/a504c01a-a96a-4732-b92b-a65908bf813e",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://helenatestdev.azurewebsites.net/api/user/approve/a504c01a-a96a-4732-b92b-a65908bf813e",
+							"protocol": "https",
+							"host": [
+								"helenatestdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"approve",
+								"a504c01a-a96a-4732-b92b-a65908bf813e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "get greetingS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "horse",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "correct",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greetingS from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "horse",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "correct",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting?from=kajsa@ankeborg.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "kajsa@ankeborg.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greetingS to",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting?to=kajsa@ankeborg.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					],
+					"query": [
+						{
+							"key": "to",
+							"value": "kajsa@ankeborg.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greeting id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 410\", function () {\r",
+							"    pm.response.to.have.status(410);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/Helena/Keen/e2bb33f8-75cc-4e66-8a87-389087e09e1c",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						"Helena",
+						"Keen",
+						"e2bb33f8-75cc-4e66-8a87-389087e09e1c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post greeting",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from\": \"kajsa@ankeborg.com\",\r\n  \"to\": \"Keen\",\r\n  \"message\": \"This is greeting no 1\",\r\n  \"id\": \"e2bb33f8-75cc-4e66-8a87-389087e09e1c\",\r\n  \"timestamp\": \"0001-01-01T00:00:00\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post greeting Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from\": \"kajsa@ankeborg.se\",\r\n  \"to\": \"kalle@ankeborg.com\",\r\n  \"message\": \"This is greeting no 1\",\r\n  \"id\": \"e2bb33f8-75cc-4e66-8a87-389087e09e1c\",\r\n  \"timestamp\": \"0001-01-01T00:00:00\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post greeting Copy 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from\": \"kalle@ankeborg.com\",\r\n  \"to\": \"kajsa@ankeborg.com\",\r\n  \"message\": \"\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greeting wrong id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 410\", function () {\r",
+							"    pm.response.to.have.status(410);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/Helena/Keen/2c026ea6-1cca-48df-8569-56d40e3b1ada",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						"Helena",
+						"Keen",
+						"2c026ea6-1cca-48df-8569-56d40e3b1ada"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greeting id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/Helena/Keen/e2bb33f8-75cc-4e66-8a87-389087e09e1c",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						"Helena",
+						"Keen",
+						"e2bb33f8-75cc-4e66-8a87-389087e09e1c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update greeting id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"from\": \"Helena\",\r\n  \"to\": \"Emelie\",\r\n  \"message\": \"New message\",\r\n  \"id\": \"e2bb33f8-75cc-4e66-8a87-389087e09e1c\",\r\n  \"timestamp\": \"0001-01-01T00:00:00\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete greeting id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/Helena/Keen/e2bb33f8-75cc-4e66-8a87-389087e09e1c",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						"Helena",
+						"Keen",
+						"e2bb33f8-75cc-4e66-8a87-389087e09e1c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get greeting id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 410\", function () {\r",
+							"    pm.response.to.have.status(410);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Greeting/Helena/Keen/e2bb33f8-75cc-4e66-8a87-389087e09e1c",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Greeting",
+						"Helena",
+						"Keen",
+						"e2bb33f8-75cc-4e66-8a87-389087e09e1c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get coffee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 418\", function () {\r",
+							"    pm.response.to.have.status(418);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "horse",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "correct",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/coffee",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"coffee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user Kalle",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/user/kalle@ankeborg.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"kalle@ankeborg.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user Kajsa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/user/kajsa@ankeborg.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"kajsa@ankeborg.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Kalle",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Kalle\",\r\n    \"lastName\": \"Anka\",\r\n    \"email\": \"kalle@ankeborg.com\",\r\n    \"password\": \"test\",\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Kajsa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Kajsa\",\r\n    \"lastName\": \"Anka\",\r\n    \"email\": \"kajsa@ankeborg.com\",\r\n    \"password\": \"test\",\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Joakim",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Joakim\",\r\n    \"lastName\": \"von Anka\",\r\n    \"email\": \"joakim@ankeborg.com\",\r\n    \"password\": \"test\",\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Musse",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Muss\",\r\n    \"lastName\": \"Pigg\",\r\n    \"email\": \"musse@ankeborg.com\",\r\n    \"password\": \"test\",\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Mimmi",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Mimmi\",\r\n    \"lastName\": \"Pigg\",\r\n    \"email\": \"mimmi@ankeborg.com\",\r\n    \"password\": \"test\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user Alexander",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Alexander\",\r\n    \"lastName\": \"Lukas\",\r\n    \"email\": \"alexander@ankeborg.com\",\r\n    \"password\": \"check\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get invoice Kajsa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/invoice/2022/03/kajsa@ankeborg.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"invoice",
+						"2022",
+						"03",
+						"kajsa@ankeborg.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all invoices 2022 03",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/invoice/2022/03",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"invoice",
+						"2022",
+						"03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Random greeting",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/random",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"random"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get 2022 03",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "kajsa@ankeborg.com",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "test",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:7071",
+			"type": "default"
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://helenatestdev.azurewebsites.net",
+			"type": "default",
+			"disabled": true
+		}
+	]
+}
